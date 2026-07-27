@@ -1,0 +1,32 @@
+{
+  "projectName": "finance-app",
+  "mode": "file-router",
+  "typescript": true,
+  "tailwind": true,
+  "packageManager": "pnpm",
+  "git": true,
+  "install": true,
+  "intent": true,
+  "addOnOptions": {
+    "drizzle": {
+      "database": "postgresql"
+    }
+  },
+  "projectPreset": "default",
+  "includeExamples": true,
+  "routerOnly": false,
+  "version": 1,
+  "framework": "react",
+  "chosenAddOns": [
+    "tanstack-query",
+    "drizzle",
+    "neon",
+    "better-auth",
+    "shadcn",
+    "table",
+    "form",
+    "t3env",
+    "biome",
+    "nitro"
+  ]
+}
