@@ -12,6 +12,8 @@ import TanStackQueryDevtools from "../integrations/tanstack-query/devtools";
 
 import appCss from "../styles.css?url";
 
+import { TooltipProvider } from "../components/ui/tooltip";
+
 import type { QueryClient } from "@tanstack/react-query";
 import { Toaster } from "sonner";
 
@@ -54,7 +56,7 @@ function RootDocument({ children }: { children: React.ReactNode }) {
 			</head>
 			<body className="font-sans antialiased [overflow-wrap:anywhere] selection:bg-[rgba(79,184,178,0.24)]">
 				{/* <Header /> */}
-				{children}
+				<TooltipProvider>{children}</TooltipProvider>
 				<Toaster />
 				{/* <Footer /> */}
 				<TanStackDevtools

@@ -12,8 +12,10 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
-import { Route as authSignUpRouteImport } from './routes/(auth)/signUp'
+import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
+import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as DashboardIndexRouteImport } from './routes/dashboard/index'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -31,14 +33,24 @@ const authLoginRoute = authLoginRouteImport.update({
   path: '/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const authSignUpRoute = authSignUpRouteImport.update({
-  id: '/(auth)/signUp',
-  path: '/signUp',
+const authResetPasswordRoute = authResetPasswordRouteImport.update({
+  id: '/(auth)/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const authSignupRoute = authSignupRouteImport.update({
+  id: '/(auth)/signup',
+  path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardIndexRoute = DashboardIndexRouteImport.update({
+  id: '/dashboard/',
+  path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
@@ -51,16 +63,20 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof authLoginRoute
-  '/signUp': typeof authSignUpRoute
+  '/reset-password': typeof authResetPasswordRoute
+  '/signup': typeof authSignupRoute
   '/api/$': typeof ApiSplatRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/login': typeof authLoginRoute
-  '/signUp': typeof authSignUpRoute
+  '/reset-password': typeof authResetPasswordRoute
+  '/signup': typeof authSignupRoute
   '/api/$': typeof ApiSplatRoute
+  '/dashboard': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRoutesById {
@@ -68,22 +84,42 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/(auth)/login': typeof authLoginRoute
-  '/(auth)/signUp': typeof authSignUpRoute
+  '/(auth)/reset-password': typeof authResetPasswordRoute
+  '/(auth)/signup': typeof authSignupRoute
   '/api/$': typeof ApiSplatRoute
+  '/dashboard/': typeof DashboardIndexRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/about' | '/login' | '/signUp' | '/api/$' | '/api/auth/$'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/api/$'
+    | '/dashboard/'
+    | '/api/auth/$'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/about' | '/login' | '/signUp' | '/api/$' | '/api/auth/$'
+  to:
+    | '/'
+    | '/about'
+    | '/login'
+    | '/reset-password'
+    | '/signup'
+    | '/api/$'
+    | '/dashboard'
+    | '/api/auth/$'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/(auth)/login'
-    | '/(auth)/signUp'
+    | '/(auth)/reset-password'
+    | '/(auth)/signup'
     | '/api/$'
+    | '/dashboard/'
     | '/api/auth/$'
   fileRoutesById: FileRoutesById
 }
@@ -91,8 +127,10 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
   authLoginRoute: typeof authLoginRoute
-  authSignUpRoute: typeof authSignUpRoute
+  authResetPasswordRoute: typeof authResetPasswordRoute
+  authSignupRoute: typeof authSignupRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  DashboardIndexRoute: typeof DashboardIndexRoute
   ApiAuthSplatRoute: typeof ApiAuthSplatRoute
 }
 
@@ -119,11 +157,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof authLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/(auth)/signUp': {
-      id: '/(auth)/signUp'
-      path: '/signUp'
-      fullPath: '/signUp'
-      preLoaderRoute: typeof authSignUpRouteImport
+    '/(auth)/reset-password': {
+      id: '/(auth)/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof authResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/(auth)/signup': {
+      id: '/(auth)/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof authSignupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/$': {
@@ -131,6 +176,13 @@ declare module '@tanstack/react-router' {
       path: '/api/$'
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/': {
+      id: '/dashboard/'
+      path: '/dashboard'
+      fullPath: '/dashboard/'
+      preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/auth/$': {
@@ -147,8 +199,10 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
   authLoginRoute: authLoginRoute,
-  authSignUpRoute: authSignUpRoute,
+  authResetPasswordRoute: authResetPasswordRoute,
+  authSignupRoute: authSignupRoute,
   ApiSplatRoute: ApiSplatRoute,
+  DashboardIndexRoute: DashboardIndexRoute,
   ApiAuthSplatRoute: ApiAuthSplatRoute,
 }
 export const routeTree = rootRouteImport

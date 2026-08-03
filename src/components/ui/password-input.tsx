@@ -150,7 +150,7 @@ export function PasswordInputStrengthChecker() {
       >
         {Array.from({ length: 4 }).map((_, i) => {
           const color =
-            strengthResult.score >= 3 ? "bg-primary" : "bg-destructive"
+            strengthResult.score >= 3 ? "bg-green-500" : "bg-destructive"
 
           return (
             <div

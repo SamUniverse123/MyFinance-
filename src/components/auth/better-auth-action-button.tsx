@@ -1,4 +1,4 @@
-import { ComponentProps } from "react"
+import { type ComponentProps } from "react"
 import { ActionButton } from "../ui/action-button"
 
 export function BetterAuthActionButton({

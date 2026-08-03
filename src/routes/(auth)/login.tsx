@@ -12,7 +12,7 @@ function LoginPage() {
 	const { data: session  } = authClient.useSession()
 
 	if(session){
-		navigate( { to : "/"})
+		navigate( { to : "/dashboard"})
 	}
 
 	return (

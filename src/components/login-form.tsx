@@ -12,11 +12,12 @@ import { Input } from "@/components/ui/input.tsx";
 import { useForm } from "@tanstack/react-form";
 import { toast } from "sonner";
 import * as z from "zod";
-import { Google, Apple, Facebook } from "./ui/socialProviderButton";
 import { authClient } from "#/lib/auth/auth-client";
 import { Spinner } from "@/components/ui/spinner"
 import { SocialAuthButtons } from "./auth/social-auth-buttons";
 import { PasswordInput } from "./ui/password-input";
+import { useState } from "react";
+import { ForgotPasswordForm } from "./auth/forgot-password-form";
 
 
 export const loginSchema = z.object({
@@ -33,6 +34,8 @@ export function LoginForm({
 	className,
 	...props
 }: React.ComponentProps<"form">) {
+	const [changePasswordState, setChangePassword] = useState<boolean>(false)
+
 	const form = useForm({
 		defaultValues: {
 			email: "",
@@ -45,7 +48,7 @@ export function LoginForm({
 			await authClient.signIn.email({
 				...value,
 				rememberMe: true,
-				callbackURL: "/",
+				callbackURL: "/dashboard",
 			},{
         
         onError: (ctx) => {
@@ -58,6 +61,11 @@ export function LoginForm({
 
 	});
 
+
+		if(changePasswordState){
+			return <ForgotPasswordForm   setChangePassword={setChangePassword}/>
+		}
+
 	return (
 		<form
 			className={cn("flex flex-col gap-6", className)}
@@ -69,7 +77,7 @@ export function LoginForm({
 		>
 			<FieldGroup>
 				<div className="flex flex-col items-center gap-1 text-center">
-					<h1 className="text-2xl font-bold mb-8">Login to your account</h1>
+					<h1 className="text-2xl font-bold mb-8">Welcome Back!</h1>
 					{/* <p className="text-sm text-balance text-muted-foreground">
             Enter your email below to login to your account
           </p> */}
@@ -109,6 +117,10 @@ export function LoginForm({
 									<FieldLabel htmlFor={field.name}>Password</FieldLabel>
 									<a
 										href="#"
+										onClick={async () => {
+											setChangePassword(true)
+
+										}}
 										className="ml-auto text-sm underline-offset-4 hover:underline"
 									>
 										Forgot your password?
@@ -144,7 +156,7 @@ export function LoginForm({
 
 					<FieldDescription className="text-center">
 						Don&apos;t have an account?{" "}
-						<a href="#" className="underline underline-offset-4">
+						<a href="/signup" className="underline underline-offset-4">
 							Sign up
 						</a>
 					</FieldDescription>

@@ -2,7 +2,7 @@ import { SignupForm } from "@/components/signup-form";
 import Silk from "@/components/Silk";
 import { createFileRoute } from "@tanstack/react-router";
 
-export const Route = createFileRoute("/(auth)/signUp")({
+export const Route = createFileRoute("/(auth)/signup")({
 	component: SignUpPage,
 });
 

@@ -18,6 +18,8 @@ import { useNavigate } from "@tanstack/react-router";
 import { Spinner } from "./ui/spinner";
 import { SocialAuthButtons } from "./auth/social-auth-buttons";
 import { PasswordInput } from "./ui/password-input";
+import VerifyEmail from "./auth/email/verify-email";
+import { useState } from "react";
 
 
 export const signupSchema = z
@@ -39,38 +41,52 @@ export function SignupForm({
   ...props
 }: React.ComponentProps<"form">) {
   const navigate = useNavigate()
+  const [pendingVerificationEmail, setPendingVerificationEmail] = useState<string | null>(null)
 
 const form = useForm({
 		defaultValues: {
-      name: "",
+      		name: "",
 			email: "",
 			password: "",
-      confirm_password: ""
+      		confirm_password: ""
 		},
 		validators: {
 			onSubmit: signupSchema,
 		},
 		onSubmit: async ({ value }) => {
-			await authClient.signUp.email({
+			const res = await authClient.signUp.email({
         ...value,
-        callbackURL: "/",
-        
+        callbackURL: "/dashboard",
+
       },{
-        
+
         onError: (ctx) => {
             toast.error(ctx.error.message || "cannot log in")
-        },
 
-        onSuccess: () => {
-            navigate({ to: '/'})
         },
 });
+
+	if (res.error == null) {
+		if (!res.data.user.emailVerified) {
+			setPendingVerificationEmail(value.email)
+		} else {
+			navigate({ to: '/dashboard' })
+		}
+	}
+
 		},
 
     
 
 	});
 
+  if (pendingVerificationEmail) {
+    return (
+      <div className={cn("flex flex-col gap-6", className)}>
+        <VerifyEmail email={pendingVerificationEmail} />
+      </div>
+    )
+  }
 
   return (
     <form className={cn("flex flex-col gap-6", className)} {...props}   onSubmit={(e) => {

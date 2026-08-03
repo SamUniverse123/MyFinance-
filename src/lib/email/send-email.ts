@@ -19,8 +19,8 @@ export async function sendEmail(params: SendEmailParams) {
 
 	if (error) {
 		console.error(error);
-		return { data: null, error };
+		throw new Error(error.message);
 	}
 
-	return { data, error: null };
+	return data;
 }

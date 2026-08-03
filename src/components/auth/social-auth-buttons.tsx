@@ -17,7 +17,7 @@ export function SocialAuthButtons( ) {
         action={() => {
           return authClient.signIn.social({
             provider,
-            callbackURL: "/",
+            callbackURL: "/dashboard",
           })
         }}
       >
