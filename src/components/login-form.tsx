@@ -18,6 +18,9 @@ import { SocialAuthButtons } from "./auth/social-auth-buttons";
 import { PasswordInput } from "./ui/password-input";
 import { useState } from "react";
 import { ForgotPasswordForm } from "./auth/forgot-password-form";
+import { sessionQueryKey } from "#/lib/auth/session";
+import { useQueryClient } from "@tanstack/react-query";
+import { useNavigate, useRouter } from "@tanstack/react-router";
 
 
 export const loginSchema = z.object({
@@ -35,6 +38,9 @@ export function LoginForm({
 	...props
 }: React.ComponentProps<"form">) {
 	const [changePasswordState, setChangePassword] = useState<boolean>(false)
+	const queryClient = useQueryClient();
+	const navigate = useNavigate();
+	const router = useRouter()
 
 	const form = useForm({
 		defaultValues: {
@@ -54,6 +60,11 @@ export function LoginForm({
         onError: (ctx) => {
             toast.error(ctx.error.message || "cannot log in")
         },
+		 onSuccess: async () => {
+			queryClient.removeQueries({ queryKey: sessionQueryKey });
+			await router.invalidate();
+			await navigate({ to: "/dashboard" });
+  },
 });
 		},
 

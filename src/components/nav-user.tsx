@@ -20,6 +20,12 @@ import {
 } from "#/components/ui/sidebar.tsx"
 import { EllipsisVerticalIcon, CircleUserRoundIcon, CreditCardIcon, BellIcon, LogOutIcon } from "lucide-react"
 import { authClient } from "#/lib/auth/auth-client"
+import { sessionQueryKey } from "#/lib/auth/session"
+import { useQueryClient } from "@tanstack/react-query"
+import { useNavigate, useRouter } from "@tanstack/react-router"
+import { Route as RootRoute } from '@/routes/__root'
+
+
 
 export function NavUser({
   user,
@@ -31,7 +37,20 @@ export function NavUser({
   }
 }) {
   const { isMobile } = useSidebar()
-  const {data : session} = authClient.useSession()
+  const { session } = RootRoute.useRouteContext()
+  const router = useRouter() 
+  
+  // const {data : session} = authClient.useSession()
+  const queryClient = useQueryClient()
+  const navigate = useNavigate()
+
+  async function handleSignOut() {
+    await authClient.signOut()
+    // Drop the cached server session so the route guards see the logged-out state.
+    queryClient.removeQueries({ queryKey: sessionQueryKey })
+    await router.invalidate()
+    await navigate({ to: "/login" })
+  }
 
   
   return (
@@ -96,7 +115,7 @@ export function NavUser({
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
            
-              <DropdownMenuItem onClick={async () => await authClient.signOut()}>
+              <DropdownMenuItem onClick={handleSignOut}>
               
                 <LogOutIcon/>
                  Log out

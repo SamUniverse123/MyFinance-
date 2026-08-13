@@ -1,5 +1,6 @@
 import * as React from "react"
 
+import { env } from "#/env.ts"
 import { NavDocuments } from "#/components/nav-documents.tsx"
 import { NavMain } from "#/components/nav-main.tsx"
 import { NavSecondary } from "#/components/nav-secondary.tsx"
@@ -13,7 +14,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "#/components/ui/sidebar.tsx"
-import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon } from "lucide-react"
+import { LayoutDashboardIcon, ListIcon, ChartBarIcon, FolderIcon, UsersIcon, CameraIcon, FileTextIcon, Settings2Icon, CircleHelpIcon, SearchIcon, DatabaseIcon, FileChartColumnIcon, FileIcon, CommandIcon, Wallet, BadgeDollarSign } from "lucide-react"
 
 const data = {
   user: {
@@ -24,25 +25,24 @@ const data = {
   navMain: [
     {
       title: "Dashboard",
-      url: "#",
+      url: `${env.VITE_DEV_DOMAIN}/dashboard`,
       icon: (
         <LayoutDashboardIcon
         />
       ),
     },
     {
-      title: "Lifecycle",
-      url: "#",
+      title: "Accounts",
+      url: `${env.VITE_DEV_DOMAIN}/accounts`,
       icon: (
-        <ListIcon
-        />
+       <BadgeDollarSign />
       ),
     },
     {
-      title: "Analytics",
-      url: "#",
+      title: "Transactions",
+      url: `${env.VITE_DEV_DOMAIN}/transactions`,
       icon: (
-        <ChartBarIcon
+         <ListIcon
         />
       ),
     },
@@ -186,7 +186,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             >
               <a href="#">
                 <CommandIcon className="size-5!" />
-                <span className="text-base font-semibold">Acme Inc.</span>
+                <span className="text-base font-semibold">myFinance</span>
               </a>
             </SidebarMenuButton>
           </SidebarMenuItem>

@@ -1,20 +1,17 @@
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect } from "@tanstack/react-router";
 import { LoginForm } from "@/components/login-form";
 import Silk from "@/components/Silk";
-import { authClient } from "#/lib/auth/auth-client";
 
 export const Route = createFileRoute("/(auth)/login")({
+	beforeLoad: ({ context }) => {
+		if (context.session) {
+			throw redirect({ to: "/dashboard" });
+		}
+	},
 	component: LoginPage,
 });
 
 function LoginPage() {
-	const navigate = useNavigate()
-	const { data: session  } = authClient.useSession()
-
-	if(session){
-		navigate( { to : "/dashboard"})
-	}
-
 	return (
 		<div className="grid min-h-svh lg:grid-cols-2">
 			<div className="flex flex-col gap-4 p-6 md:p-10">

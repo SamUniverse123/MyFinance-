@@ -16,6 +16,7 @@ import { TooltipProvider } from "../components/ui/tooltip";
 
 import type { QueryClient } from "@tanstack/react-query";
 import { Toaster } from "sonner";
+import { sessionQueryOptions } from "../lib/auth/session";
 
 interface MyRouterContext {
 	queryClient: QueryClient;
@@ -24,6 +25,14 @@ interface MyRouterContext {
 const THEME_INIT_SCRIPT = `(function(){try{var stored=window.localStorage.getItem('theme');var mode=(stored==='light'||stored==='dark'||stored==='auto')?stored:'auto';var prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;var resolved=mode==='auto'?(prefersDark?'dark':'light'):mode;var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);if(mode==='auto'){root.removeAttribute('data-theme')}else{root.setAttribute('data-theme',mode)}root.style.colorScheme=resolved;}catch(e){}})();`;
 
 export const Route = createRootRouteWithContext<MyRouterContext>()({
+	// Resolved before any route component renders (on the server during SSR),
+	// so child routes can guard without a client-side flash.
+	beforeLoad: async ({ context }) => {
+		const session = await context.queryClient.ensureQueryData(
+			sessionQueryOptions,
+		);
+		return { session };
+	},
 	head: () => ({
 		meta: [
 			{

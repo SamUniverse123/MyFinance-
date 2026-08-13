@@ -5,19 +5,21 @@ import { z } from "zod";
 import { db } from "@/db";
 import { accounts, accountType } from "@/db/schema";
 import type { AuthEnv } from "../middleware/auth";
+import { AppError } from "#/server/lib/error";
 
-const idParam = z.object({ id: z.string().uuid() });
+const idParam = z.object({ id: z.uuid()});
 
 const insertSchema = z.object({
 	name: z.string().min(1),
 	type: z.enum(accountType.enumValues),
 	initialBalance: z.number().int().default(0),
-	currency: z.string().length(3).default("USD"),
+	currency: z.string().regex(/^[A-Z]{3}$/),
 	color: z.string().nullish(),
 	icon: z.string().nullish(),
 });
 
-const updateSchema = insertSchema.partial();
+const updateSchema = insertSchema.pick({ name: true, type: true, color: true, icon: true, initialBalance: true})
+  .partial()
 
 const app = new Hono<AuthEnv>()
 	.get("/", async (c) => {
@@ -44,7 +46,10 @@ const app = new Hono<AuthEnv>()
 			.select()
 			.from(accounts)
 			.where(and(eq(accounts.id, id), eq(accounts.userId, userId)));
-		if (!row) return c.json({ error: "Not found" }, 404);
+		if (!row) {
+			throw new AppError('not_found', 'Account not found', { accountId: c.req.param('id')}
+				)}
+
 		return c.json(row);
 	})
 	.patch(
@@ -59,7 +64,11 @@ const app = new Hono<AuthEnv>()
 				.set({ ...c.req.valid("json"), updatedAt: new Date() })
 				.where(and(eq(accounts.id, id), eq(accounts.userId, userId)))
 				.returning();
-			if (!row) return c.json({ error: "Not found" }, 404);
+			
+			if (!row) {
+			throw new AppError('not_found', 'Account not found', { accountId: c.req.param('id')}
+				)}	
+				
 			return c.json(row);
 		},
 	)
@@ -70,7 +79,12 @@ const app = new Hono<AuthEnv>()
 			.delete(accounts)
 			.where(and(eq(accounts.id, id), eq(accounts.userId, userId)))
 			.returning();
-		if (!row) return c.json({ error: "Not found" }, 404);
+		
+		if (!row) {
+			throw new AppError('not_found', 'Account not found', { accountId: c.req.param('id')}
+				)}
+				
+
 		return c.body(null, 204);
 	});
 

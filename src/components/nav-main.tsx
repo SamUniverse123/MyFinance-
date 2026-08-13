@@ -7,6 +7,7 @@ import {
   SidebarMenuItem,
 } from "#/components/ui/sidebar.tsx"
 import { CirclePlusIcon, MailIcon } from "lucide-react"
+import { useLocation } from "@tanstack/react-router"
 
 export function NavMain({
   items,
@@ -17,6 +18,8 @@ export function NavMain({
     icon?: React.ReactNode
   }[]
 }) {
+  const { pathname } = useLocation()
+
   return (
     <SidebarGroup>
       <SidebarGroupContent className="flex flex-col gap-2">
@@ -42,14 +45,26 @@ export function NavMain({
           </SidebarMenuItem>
         </SidebarMenu>
         <SidebarMenu>
-          {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-          ))}
+          {items.map((item) => {
+            let itemPath: string | undefined
+            try {
+              itemPath = new URL(item.url).pathname
+            } catch {
+              itemPath = undefined
+            }
+            const isActive = itemPath !== undefined && pathname === itemPath
+
+            return (
+              <SidebarMenuItem key={item.title}>
+                <SidebarMenuButton asChild tooltip={item.title} isActive={isActive}>
+                  <a href={item.url}>
+                    {item.icon}
+                    <span>{item.title}</span>
+                  </a>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )
+          })}
         </SidebarMenu>
       </SidebarGroupContent>
     </SidebarGroup>
