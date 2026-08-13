@@ -1,0 +1,324 @@
+diff --git a/esm/createScale.js b/esm/createScale.js
+index fbc5c9bfbf930ab2ce9e6a4903eba5fbee264a02..75457d11847836a2be08c23ba5ac9260b87ee90a 100644
+--- a/esm/createScale.js
++++ b/esm/createScale.js
+@@ -1,20 +1,20 @@
+ /* eslint-disable @typescript-eslint/no-unused-vars */
+ /* eslint-disable no-redeclare */
+ 
+-import createLinearScale from './scales/linear';
+-import createLogScale from './scales/log';
+-import createPowScale from './scales/power';
+-import createSqrtScale from './scales/squareRoot';
+-import createSymlogScale from './scales/symlog';
+-import createTimeScale from './scales/time';
+-import createUtcScale from './scales/utc';
+-import createQuantileScale from './scales/quantile';
+-import createQuantizeScale from './scales/quantize';
+-import createThresholdScale from './scales/threshold';
+-import createOrdinalScale from './scales/ordinal';
+-import createPointScale from './scales/point';
+-import createBandScale from './scales/band';
+-import createRadialScale from './scales/radial';
++import createLinearScale from './scales/linear.js';
++import createLogScale from './scales/log.js';
++import createPowScale from './scales/power.js';
++import createSqrtScale from './scales/squareRoot.js';
++import createSymlogScale from './scales/symlog.js';
++import createTimeScale from './scales/time.js';
++import createUtcScale from './scales/utc.js';
++import createQuantileScale from './scales/quantile.js';
++import createQuantizeScale from './scales/quantize.js';
++import createThresholdScale from './scales/threshold.js';
++import createOrdinalScale from './scales/ordinal.js';
++import createPointScale from './scales/point.js';
++import createBandScale from './scales/band.js';
++import createRadialScale from './scales/radial.js';
+ 
+ // Overload function for more strict typing, e.g.,
+ // If the config is a linear config then a ScaleLinear will be returned
+diff --git a/esm/index.js b/esm/index.js
+index 49aeee957bfdff32162b6e3417ad9dd0c28d9596..7d8e715b747d9820fadade75554731cbe656e9d9 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,24 +1,24 @@
+ // @visx/scale
+-export { default as scaleBand } from './scales/band';
+-export { default as scalePoint } from './scales/point';
+-export { default as scaleLinear } from './scales/linear';
+-export { default as scaleRadial } from './scales/radial';
+-export { default as scaleTime } from './scales/time';
+-export { default as scaleUtc } from './scales/utc';
+-export { default as scaleLog } from './scales/log';
+-export { default as scalePower } from './scales/power';
+-export { default as scaleOrdinal } from './scales/ordinal';
+-export { default as scaleQuantize } from './scales/quantize';
+-export { default as scaleQuantile } from './scales/quantile';
+-export { default as scaleSymlog } from './scales/symlog';
+-export { default as scaleThreshold } from './scales/threshold';
+-export { default as scaleSqrt } from './scales/squareRoot';
+-export { default as createScale } from './createScale';
+-export { default as updateScale } from './updateScale';
+-export { default as inferScaleType } from './utils/inferScaleType';
+-export { default as coerceNumber } from './utils/coerceNumber';
+-export { default as getTicks } from './utils/getTicks';
+-export { default as toString } from './utils/toString';
+-export { default as scaleCanBeZeroed } from './utils/scaleCanBeZeroed';
++export { default as scaleBand } from './scales/band.js';
++export { default as scalePoint } from './scales/point.js';
++export { default as scaleLinear } from './scales/linear.js';
++export { default as scaleRadial } from './scales/radial.js';
++export { default as scaleTime } from './scales/time.js';
++export { default as scaleUtc } from './scales/utc.js';
++export { default as scaleLog } from './scales/log.js';
++export { default as scalePower } from './scales/power.js';
++export { default as scaleOrdinal } from './scales/ordinal.js';
++export { default as scaleQuantize } from './scales/quantize.js';
++export { default as scaleQuantile } from './scales/quantile.js';
++export { default as scaleSymlog } from './scales/symlog.js';
++export { default as scaleThreshold } from './scales/threshold.js';
++export { default as scaleSqrt } from './scales/squareRoot.js';
++export { default as createScale } from './createScale.js';
++export { default as updateScale } from './updateScale.js';
++export { default as inferScaleType } from './utils/inferScaleType.js';
++export { default as coerceNumber } from './utils/coerceNumber.js';
++export { default as getTicks } from './utils/getTicks.js';
++export { default as toString } from './utils/toString.js';
++export { default as scaleCanBeZeroed } from './utils/scaleCanBeZeroed.js';
+ 
+ // export types
+\ No newline at end of file
+diff --git a/esm/operators/interpolate.js b/esm/operators/interpolate.js
+index 40ea56696db602aaa31061c12e66085413a0ac3d..108c7a37c0b753666ec17a0594449a6fcc73eb62 100644
+--- a/esm/operators/interpolate.js
++++ b/esm/operators/interpolate.js
+@@ -1,4 +1,4 @@
+-import createColorInterpolator from '../utils/createColorInterpolator';
++import createColorInterpolator from '../utils/createColorInterpolator.js';
+ export default function applyInterpolate(scale, config) {
+   if ('interpolate' in config && 'interpolate' in scale && typeof config.interpolate !== 'undefined') {
+     const interpolator = createColorInterpolator(config.interpolate);
+diff --git a/esm/operators/nice.js b/esm/operators/nice.js
+index a6b2690652d0d01c1cefedfd0f6bdbf9936c8c86..f1940e767682ad40f43110b4ab65cdbe01fb6398 100644
+--- a/esm/operators/nice.js
++++ b/esm/operators/nice.js
+@@ -1,5 +1,5 @@
+ import { timeSecond, timeMinute, timeHour, timeDay, timeYear, timeMonth, timeWeek, utcSecond, utcMinute, utcHour, utcDay, utcWeek, utcMonth, utcYear } from '@visx/vendor/d3-time';
+-import isUtcScale from '../utils/isUtcScale';
++import isUtcScale from '../utils/isUtcScale.js';
+ const localTimeIntervals = {
+   day: timeDay,
+   hour: timeHour,
+diff --git a/esm/operators/scaleOperator.js b/esm/operators/scaleOperator.js
+index bd87ddd5d06b40c0e3e4e8b35b3b24c8aa46b3fe..d0e8e8e03b87ea450bada88b3da35b9a1f2a72b1 100644
+--- a/esm/operators/scaleOperator.js
++++ b/esm/operators/scaleOperator.js
+@@ -1,17 +1,17 @@
+-import domain from './domain';
+-import range from './range';
+-import align from './align';
+-import base from './base';
+-import clamp from './clamp';
+-import constant from './constant';
+-import exponent from './exponent';
+-import interpolate from './interpolate';
+-import nice from './nice';
+-import padding from './padding';
+-import reverse from './reverse';
+-import round from './round';
+-import unknown from './unknown';
+-import zero from './zero';
++import domain from './domain.js';
++import range from './range.js';
++import align from './align.js';
++import base from './base.js';
++import clamp from './clamp.js';
++import constant from './constant.js';
++import exponent from './exponent.js';
++import interpolate from './interpolate.js';
++import nice from './nice.js';
++import padding from './padding.js';
++import reverse from './reverse.js';
++import round from './round.js';
++import unknown from './unknown.js';
++import zero from './zero.js';
+ 
+ /**
+  * List of all operators, in order of execution
+diff --git a/esm/scales/band.js b/esm/scales/band.js
+index c1279cb0cf02669bb4817a0b1b1315794a627989..0805f5abf18b0cd5e69d819ee4ae94e9b6e62ec2 100644
+--- a/esm/scales/band.js
++++ b/esm/scales/band.js
+@@ -1,5 +1,5 @@
+ import { scaleBand } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateBandScale = scaleOperator('domain', 'range', 'reverse', 'align', 'padding', 'round');
+ export default function createBandScale(config) {
+   return updateBandScale(scaleBand(), config);
+diff --git a/esm/scales/linear.js b/esm/scales/linear.js
+index 929fa081cd599dd9b5436f8a424729cded67daca..935e7c1c704c29411c21821cc486a75727499971 100644
+--- a/esm/scales/linear.js
++++ b/esm/scales/linear.js
+@@ -1,5 +1,5 @@
+ import { scaleLinear } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateLinearScale = scaleOperator('domain', 'range', 'reverse', 'clamp', 'interpolate', 'nice', 'round', 'zero');
+ export default function createLinearScale(config) {
+   return updateLinearScale(scaleLinear(), config);
+diff --git a/esm/scales/log.js b/esm/scales/log.js
+index 48b240bfead05e70f8eae1db34f4f3bc2bd575d5..a9e642f6b84b834d9dd12e7789bde2c0561d3bde 100644
+--- a/esm/scales/log.js
++++ b/esm/scales/log.js
+@@ -1,5 +1,5 @@
+ import { scaleLog } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateLogScale = scaleOperator('domain', 'range', 'reverse', 'base', 'clamp', 'interpolate', 'nice', 'round');
+ export default function createLogScale(config) {
+   return updateLogScale(scaleLog(), config);
+diff --git a/esm/scales/ordinal.js b/esm/scales/ordinal.js
+index b26b2dfc4604a9423fdb2f95feb5a942010ed47a..c623f923465f06d8771ed6f79bdae5e674c42d01 100644
+--- a/esm/scales/ordinal.js
++++ b/esm/scales/ordinal.js
+@@ -1,5 +1,5 @@
+ import { scaleOrdinal } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateOrdinalScale = scaleOperator('domain', 'range', 'reverse', 'unknown');
+ export default function createOrdinalScale(config) {
+   return updateOrdinalScale(scaleOrdinal(), config);
+diff --git a/esm/scales/point.js b/esm/scales/point.js
+index 41b49cf6e35db31aabf9d2d085cbc2ba1beb042b..8d5377447ab02bd9d55be0b4ebb21fab2fcb832c 100644
+--- a/esm/scales/point.js
++++ b/esm/scales/point.js
+@@ -1,5 +1,5 @@
+ import { scalePoint } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updatePointScale = scaleOperator('domain', 'range', 'reverse', 'align', 'padding', 'round');
+ export default function createPointScale(config) {
+   return updatePointScale(scalePoint(), config);
+diff --git a/esm/scales/power.js b/esm/scales/power.js
+index 0d0ce87a354e5b6eef7e3b192199910d630b54e5..3471366fef10979763d8ef5dc27def5297bf4d32 100644
+--- a/esm/scales/power.js
++++ b/esm/scales/power.js
+@@ -1,5 +1,5 @@
+ import { scalePow } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updatePowScale = scaleOperator('domain', 'range', 'reverse', 'clamp', 'exponent', 'interpolate', 'nice', 'round', 'zero');
+ export default function createPowScale(config) {
+   return updatePowScale(scalePow(), config);
+diff --git a/esm/scales/quantile.js b/esm/scales/quantile.js
+index 5edb9a492009879e493fee3106ca38b4010472f9..c36f0292efd3079dc1d5c418145c7e0e73efcaac 100644
+--- a/esm/scales/quantile.js
++++ b/esm/scales/quantile.js
+@@ -1,5 +1,5 @@
+ import { scaleQuantile } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateQuantileScale = scaleOperator('domain', 'range', 'reverse');
+ export default function createQuantileScale(config) {
+   return updateQuantileScale(scaleQuantile(), config);
+diff --git a/esm/scales/quantize.js b/esm/scales/quantize.js
+index 0fb98a3e992d9e4c9cc37813feaf3170e5bd0747..1aa52b20be0386277265a97a97437354c00a73c1 100644
+--- a/esm/scales/quantize.js
++++ b/esm/scales/quantize.js
+@@ -1,5 +1,5 @@
+ import { scaleQuantize } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateQuantizeScale = scaleOperator('domain', 'range', 'reverse', 'nice', 'zero');
+ export default function createQuantizeScale(config) {
+   return updateQuantizeScale(scaleQuantize(), config);
+diff --git a/esm/scales/radial.js b/esm/scales/radial.js
+index 703c2117ed682c11a48f1b6303d28e6f44f78c78..36fdef2de3f5a32665bb4d108860df4404614875 100644
+--- a/esm/scales/radial.js
++++ b/esm/scales/radial.js
+@@ -1,5 +1,5 @@
+ import { scaleRadial } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateRadialScale = scaleOperator('domain', 'range', 'clamp', 'nice', 'round', 'unknown');
+ export default function createRadialScale(config) {
+   return updateRadialScale(scaleRadial(), config);
+diff --git a/esm/scales/squareRoot.js b/esm/scales/squareRoot.js
+index fe2ee7c2bf143d892f1b9f3f37a18c9a397c200c..4df3eac09737094c1aafcf92a4bde89c835f6ff2 100644
+--- a/esm/scales/squareRoot.js
++++ b/esm/scales/squareRoot.js
+@@ -1,5 +1,5 @@
+ import { scaleSqrt } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateSqrtScale = scaleOperator('domain', 'range', 'reverse', 'clamp', 'interpolate', 'nice', 'round', 'zero');
+ export default function createSqrtScale(config) {
+   return updateSqrtScale(scaleSqrt(), config);
+diff --git a/esm/scales/symlog.js b/esm/scales/symlog.js
+index 0c238eb4ab71f79e0d2bcbdaaabecef2c8805579..d15cff24971552203ce8f11ce981422e25a16e5b 100644
+--- a/esm/scales/symlog.js
++++ b/esm/scales/symlog.js
+@@ -1,5 +1,5 @@
+ import { scaleSymlog } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateSymlogScale = scaleOperator('domain', 'range', 'reverse', 'clamp', 'constant', 'nice', 'zero', 'round');
+ export default function createSymlogScale(config) {
+   return updateSymlogScale(scaleSymlog(), config);
+diff --git a/esm/scales/threshold.js b/esm/scales/threshold.js
+index d349da8c479f1088b3dc825d27ec68db0743214e..43f421011bf1e9ebccdbff3270bd02a4a878942a 100644
+--- a/esm/scales/threshold.js
++++ b/esm/scales/threshold.js
+@@ -1,5 +1,5 @@
+ import { scaleThreshold } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateThresholdScale = scaleOperator('domain', 'range', 'reverse');
+ export default function createThresholdScale(config) {
+   return updateThresholdScale(scaleThreshold(), config);
+diff --git a/esm/scales/time.js b/esm/scales/time.js
+index c20359f95fd3b4412c5094b432d6e9c89f2969c2..1065dbeefb462cf28b6ef2e4949677613cd3007f 100644
+--- a/esm/scales/time.js
++++ b/esm/scales/time.js
+@@ -1,5 +1,5 @@
+ import { scaleTime } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateTimeScale = scaleOperator('domain', 'range', 'reverse', 'clamp', 'interpolate', 'nice', 'round');
+ export default function createTimeScale(config) {
+   return updateTimeScale(scaleTime(), config);
+diff --git a/esm/scales/utc.js b/esm/scales/utc.js
+index d137057a021c20c07319831a53b22e683c318bb1..882c67223b1b07956da3d6c31eb8c0187df36907 100644
+--- a/esm/scales/utc.js
++++ b/esm/scales/utc.js
+@@ -1,5 +1,5 @@
+ import { scaleUtc } from '@visx/vendor/d3-scale';
+-import scaleOperator from '../operators/scaleOperator';
++import scaleOperator from '../operators/scaleOperator.js';
+ export const updateUtcScale = scaleOperator('domain', 'range', 'reverse', 'clamp', 'interpolate', 'nice', 'round');
+ export default function createUtcScale(config) {
+   return updateUtcScale(scaleUtc(), config);
+diff --git a/esm/updateScale.js b/esm/updateScale.js
+index ad716502bb0f24e29699862474f167a8e27fc0c5..f9514a8bae4246fce80783b2be322799abcbbd6a 100644
+--- a/esm/updateScale.js
++++ b/esm/updateScale.js
+@@ -1,7 +1,7 @@
+ /* eslint-disable no-redeclare */
+ /* eslint-disable @typescript-eslint/no-unused-vars */
+ 
+-import scaleOperator, { ALL_OPERATORS } from './operators/scaleOperator';
++import scaleOperator, { ALL_OPERATORS } from './operators/scaleOperator.js';
+ const applyAllOperators = scaleOperator(...ALL_OPERATORS);
+ 
+ // Overload function signature for more strict typing, e.g.,
+diff --git a/esm/utils/inferScaleType.js b/esm/utils/inferScaleType.js
+index bf2e507d078492ccc4567ce683b37e946aba9ac9..b920a0924425756ba269d7f17ae91d6723ae4a39 100644
+--- a/esm/utils/inferScaleType.js
++++ b/esm/utils/inferScaleType.js
+@@ -1,4 +1,4 @@
+-import isUtcScale from './isUtcScale';
++import isUtcScale from './isUtcScale.js';
+ export default function inferScaleType(scale) {
+   // Try a sequence of typeguards to figure out the scale type
+ 

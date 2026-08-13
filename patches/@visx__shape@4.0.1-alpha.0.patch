@@ -1,0 +1,442 @@
+diff --git a/esm/index.js b/esm/index.js
+index fddfaf4f0da84e4c1afb8beab2b188089c989513..63bac5185c773e34c3e317d5f248baec2f93a39d 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,39 +1,39 @@
+ // @visx/shape
+-export { default as Arc } from './shapes/Arc';
+-export { default as Pie } from './shapes/Pie';
+-export { default as Line } from './shapes/Line';
+-export { default as LinePath } from './shapes/LinePath';
+-export { default as LineRadial } from './shapes/LineRadial';
+-export { default as Area } from './shapes/Area';
+-export { default as AreaClosed } from './shapes/AreaClosed';
+-export { default as AreaStack } from './shapes/AreaStack';
+-export { default as Bar } from './shapes/Bar';
+-export { default as BarRounded } from './shapes/BarRounded';
+-export { default as BarGroup } from './shapes/BarGroup';
+-export { default as BarGroupHorizontal } from './shapes/BarGroupHorizontal';
+-export { default as BarStack } from './shapes/BarStack';
+-export { default as BarStackHorizontal } from './shapes/BarStackHorizontal';
+-export { default as Stack } from './shapes/Stack';
+-export { default as stackOffset, STACK_OFFSETS, STACK_OFFSET_NAMES } from './util/stackOffset';
+-export { default as stackOrder, STACK_ORDERS, STACK_ORDER_NAMES } from './util/stackOrder';
+-export { degreesToRadians } from './util/trigonometry';
+-export { getX, getY, getSource, getTarget, getFirstItem, getSecondItem } from './util/accessors';
+-export { default as getBandwidth } from './util/getBandwidth';
+-export { default as LinkHorizontal, pathHorizontalDiagonal } from './shapes/link/diagonal/LinkHorizontal';
+-export { default as LinkVertical, pathVerticalDiagonal } from './shapes/link/diagonal/LinkVertical';
+-export { default as LinkRadial, pathRadialDiagonal } from './shapes/link/diagonal/LinkRadial';
+-export { default as LinkHorizontalCurve, pathHorizontalCurve } from './shapes/link/curve/LinkHorizontalCurve';
+-export { default as LinkVerticalCurve, pathVerticalCurve } from './shapes/link/curve/LinkVerticalCurve';
+-export { default as LinkRadialCurve, pathRadialCurve } from './shapes/link/curve/LinkRadialCurve';
+-export { default as LinkHorizontalLine, pathHorizontalLine } from './shapes/link/line/LinkHorizontalLine';
+-export { default as LinkVerticalLine, pathVerticalLine } from './shapes/link/line/LinkVerticalLine';
+-export { default as LinkRadialLine, pathRadialLine } from './shapes/link/line/LinkRadialLine';
+-export { default as LinkHorizontalStep, pathHorizontalStep } from './shapes/link/step/LinkHorizontalStep';
+-export { default as LinkVerticalStep, pathVerticalStep } from './shapes/link/step/LinkVerticalStep';
+-export { default as LinkRadialStep, pathRadialStep } from './shapes/link/step/LinkRadialStep';
+-export { default as Polygon, getPoints, getPoint } from './shapes/Polygon';
+-export { default as Circle } from './shapes/Circle';
+-export { default as SplitLinePath } from './shapes/SplitLinePath';
++export { default as Arc } from './shapes/Arc.js';
++export { default as Pie } from './shapes/Pie.js';
++export { default as Line } from './shapes/Line.js';
++export { default as LinePath } from './shapes/LinePath.js';
++export { default as LineRadial } from './shapes/LineRadial.js';
++export { default as Area } from './shapes/Area.js';
++export { default as AreaClosed } from './shapes/AreaClosed.js';
++export { default as AreaStack } from './shapes/AreaStack.js';
++export { default as Bar } from './shapes/Bar.js';
++export { default as BarRounded } from './shapes/BarRounded.js';
++export { default as BarGroup } from './shapes/BarGroup.js';
++export { default as BarGroupHorizontal } from './shapes/BarGroupHorizontal.js';
++export { default as BarStack } from './shapes/BarStack.js';
++export { default as BarStackHorizontal } from './shapes/BarStackHorizontal.js';
++export { default as Stack } from './shapes/Stack.js';
++export { default as stackOffset, STACK_OFFSETS, STACK_OFFSET_NAMES } from './util/stackOffset.js';
++export { default as stackOrder, STACK_ORDERS, STACK_ORDER_NAMES } from './util/stackOrder.js';
++export { degreesToRadians } from './util/trigonometry.js';
++export { getX, getY, getSource, getTarget, getFirstItem, getSecondItem } from './util/accessors.js';
++export { default as getBandwidth } from './util/getBandwidth.js';
++export { default as LinkHorizontal, pathHorizontalDiagonal } from './shapes/link/diagonal/LinkHorizontal.js';
++export { default as LinkVertical, pathVerticalDiagonal } from './shapes/link/diagonal/LinkVertical.js';
++export { default as LinkRadial, pathRadialDiagonal } from './shapes/link/diagonal/LinkRadial.js';
++export { default as LinkHorizontalCurve, pathHorizontalCurve } from './shapes/link/curve/LinkHorizontalCurve.js';
++export { default as LinkVerticalCurve, pathVerticalCurve } from './shapes/link/curve/LinkVerticalCurve.js';
++export { default as LinkRadialCurve, pathRadialCurve } from './shapes/link/curve/LinkRadialCurve.js';
++export { default as LinkHorizontalLine, pathHorizontalLine } from './shapes/link/line/LinkHorizontalLine.js';
++export { default as LinkVerticalLine, pathVerticalLine } from './shapes/link/line/LinkVerticalLine.js';
++export { default as LinkRadialLine, pathRadialLine } from './shapes/link/line/LinkRadialLine.js';
++export { default as LinkHorizontalStep, pathHorizontalStep } from './shapes/link/step/LinkHorizontalStep.js';
++export { default as LinkVerticalStep, pathVerticalStep } from './shapes/link/step/LinkVerticalStep.js';
++export { default as LinkRadialStep, pathRadialStep } from './shapes/link/step/LinkRadialStep.js';
++export { default as Polygon, getPoints, getPoint } from './shapes/Polygon.js';
++export { default as Circle } from './shapes/Circle.js';
++export { default as SplitLinePath } from './shapes/SplitLinePath.js';
+ 
+ // Export factory functions
+-export * from './util/D3ShapeFactories';
+\ No newline at end of file
++export * from './util/D3ShapeFactories.js';
+\ No newline at end of file
+diff --git a/esm/shapes/Arc.js b/esm/shapes/Arc.js
+index d3bfe33bdd36753c29aa67d5db4e7d5b1a78beed..c06a40ce5b7ea24feaa535567618ba020857327f 100644
+--- a/esm/shapes/Arc.js
++++ b/esm/shapes/Arc.js
+@@ -1,5 +1,5 @@
+ import cx from 'classnames';
+-import { arc } from '../util/D3ShapeFactories';
++import { arc } from '../util/D3ShapeFactories.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function Arc(_ref) {
+   let {
+diff --git a/esm/shapes/Area.js b/esm/shapes/Area.js
+index dd5badf31ae59472303be4edde12b882408148ab..4ae7ae28c70abbb1165430cd5dba8453774925e6 100644
+--- a/esm/shapes/Area.js
++++ b/esm/shapes/Area.js
+@@ -1,5 +1,5 @@
+ import cx from 'classnames';
+-import { area } from '../util/D3ShapeFactories';
++import { area } from '../util/D3ShapeFactories.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function Area(_ref) {
+   let {
+diff --git a/esm/shapes/AreaClosed.js b/esm/shapes/AreaClosed.js
+index d0f22a5285e1a5ada7824a1fca66620bef4f1818..a953ea79a541168c75ad37c93cc169659754bcbe 100644
+--- a/esm/shapes/AreaClosed.js
++++ b/esm/shapes/AreaClosed.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+-import setNumOrAccessor from '../util/setNumberOrNumberAccessor';
+-import { area } from '../util/D3ShapeFactories';
++import setNumOrAccessor from '../util/setNumberOrNumberAccessor.js';
++import { area } from '../util/D3ShapeFactories.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function AreaClosed(_ref) {
+   let {
+diff --git a/esm/shapes/AreaStack.js b/esm/shapes/AreaStack.js
+index dc0a827d87ae151259cfe034319870ca430d526e..8cd21940dced484e7f8f75b7a74edba0ef73cd06 100644
+--- a/esm/shapes/AreaStack.js
++++ b/esm/shapes/AreaStack.js
+@@ -1,5 +1,5 @@
+ import cx from 'classnames';
+-import Stack from './Stack';
++import Stack from './Stack.js';
+ import { jsx as _jsx } from "react/jsx-runtime";
+ export default function AreaStack(_ref) {
+   let {
+diff --git a/esm/shapes/BarGroup.js b/esm/shapes/BarGroup.js
+index 8b34de1de6abccc548f45a3f208df0d9c998e1f4..0d60f2c5edd27bec0d043155c75df156560ec521 100644
+--- a/esm/shapes/BarGroup.js
++++ b/esm/shapes/BarGroup.js
+@@ -1,7 +1,7 @@
+ import cx from 'classnames';
+ import { Group } from '@visx/group';
+-import Bar from './Bar';
+-import getBandwidth from '../util/getBandwidth';
++import Bar from './Bar.js';
++import getBandwidth from '../util/getBandwidth.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ /**
+  * Generates bar groups as an array of objects and renders `<rect />`s for each datum grouped by `key`. A general setup might look like this:
+diff --git a/esm/shapes/BarGroupHorizontal.js b/esm/shapes/BarGroupHorizontal.js
+index 48ae6b99da2b6de3292778dd50a2f05749a98bb5..e7cc41815bbc0b61668cbac5eaa057d2c03ab374 100644
+--- a/esm/shapes/BarGroupHorizontal.js
++++ b/esm/shapes/BarGroupHorizontal.js
+@@ -1,7 +1,7 @@
+ import cx from 'classnames';
+ import { Group } from '@visx/group';
+-import Bar from './Bar';
+-import getBandwidth from '../util/getBandwidth';
++import Bar from './Bar.js';
++import getBandwidth from '../util/getBandwidth.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function BarGroupHorizontal(_ref) {
+   let {
+diff --git a/esm/shapes/BarStack.js b/esm/shapes/BarStack.js
+index 11bbab86e8d0d873411e33517e194e4403525e5d..95f6a9c78a098dd4b74576b7071b57b72d16c652 100644
+--- a/esm/shapes/BarStack.js
++++ b/esm/shapes/BarStack.js
+@@ -1,12 +1,12 @@
+ import cx from 'classnames';
+ import { stack as d3stack } from '@visx/vendor/d3-shape';
+ import { Group } from '@visx/group';
+-import { getFirstItem, getSecondItem } from '../util/accessors';
+-import getBandwidth from '../util/getBandwidth';
+-import setNumOrAccessor from '../util/setNumberOrNumberAccessor';
+-import stackOrder from '../util/stackOrder';
+-import stackOffset from '../util/stackOffset';
+-import Bar from './Bar';
++import { getFirstItem, getSecondItem } from '../util/accessors.js';
++import getBandwidth from '../util/getBandwidth.js';
++import setNumOrAccessor from '../util/setNumberOrNumberAccessor.js';
++import stackOrder from '../util/stackOrder.js';
++import stackOffset from '../util/stackOffset.js';
++import Bar from './Bar.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function BarStack(_ref) {
+   let {
+diff --git a/esm/shapes/BarStackHorizontal.js b/esm/shapes/BarStackHorizontal.js
+index 8fd50f62b90ba79b063f0b87956e79e54792a997..dcb739b03466d107e1c339f2adc03efd70ac8484 100644
+--- a/esm/shapes/BarStackHorizontal.js
++++ b/esm/shapes/BarStackHorizontal.js
+@@ -1,12 +1,12 @@
+ import cx from 'classnames';
+ import { stack as d3stack } from '@visx/vendor/d3-shape';
+ import { Group } from '@visx/group';
+-import { getFirstItem, getSecondItem } from '../util/accessors';
+-import getBandwidth from '../util/getBandwidth';
+-import setNumOrAccessor from '../util/setNumberOrNumberAccessor';
+-import stackOrder from '../util/stackOrder';
+-import stackOffset from '../util/stackOffset';
+-import Bar from './Bar';
++import { getFirstItem, getSecondItem } from '../util/accessors.js';
++import getBandwidth from '../util/getBandwidth.js';
++import setNumOrAccessor from '../util/setNumberOrNumberAccessor.js';
++import stackOrder from '../util/stackOrder.js';
++import stackOffset from '../util/stackOffset.js';
++import Bar from './Bar.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function BarStackHorizontal(_ref) {
+   let {
+diff --git a/esm/shapes/LinePath.js b/esm/shapes/LinePath.js
+index 7d583d9905476e7899064ed0b6aac659d4b54d7c..023335c912da37f24b0151157350a760d48b8de2 100644
+--- a/esm/shapes/LinePath.js
++++ b/esm/shapes/LinePath.js
+@@ -1,5 +1,5 @@
+ import cx from 'classnames';
+-import { line } from '../util/D3ShapeFactories';
++import { line } from '../util/D3ShapeFactories.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function LinePath(_ref) {
+   let {
+diff --git a/esm/shapes/LineRadial.js b/esm/shapes/LineRadial.js
+index edb87ec9ba48c1e29fc0a5162d203fce4031b5e9..251af24598f915cb30260e35f21550e9239bfeb8 100644
+--- a/esm/shapes/LineRadial.js
++++ b/esm/shapes/LineRadial.js
+@@ -1,5 +1,5 @@
+ import cx from 'classnames';
+-import { radialLine } from '../util/D3ShapeFactories';
++import { radialLine } from '../util/D3ShapeFactories.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function LineRadial(_ref) {
+   let {
+diff --git a/esm/shapes/Pie.js b/esm/shapes/Pie.js
+index 4949dcc82abee735b460155acef3f8ad5912185d..d090aeaf43695a6c1e76f6188050dbe2e7913e78 100644
+--- a/esm/shapes/Pie.js
++++ b/esm/shapes/Pie.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { Group } from '@visx/group';
+-import { arc as arcPath, pie as piePath } from '../util/D3ShapeFactories';
++import { arc as arcPath, pie as piePath } from '../util/D3ShapeFactories.js';
+ import { Fragment as _Fragment, jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+ export default function Pie(_ref) {
+   let {
+diff --git a/esm/shapes/Polygon.js b/esm/shapes/Polygon.js
+index 52af4eb24c921a0051556ec0fbe2cd9c611ace9f..f9cfc93d960c30c03c56e0f68506046d4833a5c4 100644
+--- a/esm/shapes/Polygon.js
++++ b/esm/shapes/Polygon.js
+@@ -1,5 +1,5 @@
+ import cx from 'classnames';
+-import { degreesToRadians } from '../util/trigonometry';
++import { degreesToRadians } from '../util/trigonometry.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ const DEFAULT_CENTER = {
+   x: 0,
+diff --git a/esm/shapes/SplitLinePath.js b/esm/shapes/SplitLinePath.js
+index bdffc9977a4fbd367cd6ccbd3b955b423930d348..489e4278ad17dc27e93914c7851e8c1b88b16ae2 100644
+--- a/esm/shapes/SplitLinePath.js
++++ b/esm/shapes/SplitLinePath.js
+@@ -1,7 +1,7 @@
+ import { useMemo, Fragment } from 'react';
+-import getSplitLineSegments from '../util/getSplitLineSegments';
+-import { line } from '../util/D3ShapeFactories';
+-import LinePath from './LinePath';
++import getSplitLineSegments from '../util/getSplitLineSegments.js';
++import { line } from '../util/D3ShapeFactories.js';
++import LinePath from './LinePath.js';
+ import { jsx as _jsx } from "react/jsx-runtime";
+ const getX = d => d.x || 0;
+ const getY = d => d.y || 0;
+diff --git a/esm/shapes/Stack.js b/esm/shapes/Stack.js
+index e33f81f6eaa5569c635ef2028d3e7a24c1d5b779..7e8988abf6e016e67fea417033c5e4e0ac6fb2e5 100644
+--- a/esm/shapes/Stack.js
++++ b/esm/shapes/Stack.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { Group } from '@visx/group';
+-import { area, stack as stackPath } from '../util/D3ShapeFactories';
++import { area, stack as stackPath } from '../util/D3ShapeFactories.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export default function Stack(_ref) {
+   let {
+diff --git a/esm/shapes/link/curve/LinkHorizontalCurve.js b/esm/shapes/link/curve/LinkHorizontalCurve.js
+index 58ac0ce49dd1f311cdc5a3950176b9755555c4cb..b664e92fefd415cb81f24ebdabfc52576c888a01 100644
+--- a/esm/shapes/link/curve/LinkHorizontalCurve.js
++++ b/esm/shapes/link/curve/LinkHorizontalCurve.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getY, getX, getSource, getTarget } from '../../../util/accessors';
++import { getY, getX, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathHorizontalCurve(_ref) {
+   let {
+diff --git a/esm/shapes/link/curve/LinkRadialCurve.js b/esm/shapes/link/curve/LinkRadialCurve.js
+index e342691081104fe105d25fb8dac2de0829aac4db..d716cf795ee38f3f60260ed0bb1c1510bafe5d5d 100644
+--- a/esm/shapes/link/curve/LinkRadialCurve.js
++++ b/esm/shapes/link/curve/LinkRadialCurve.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathRadialCurve(_ref) {
+   let {
+diff --git a/esm/shapes/link/curve/LinkVerticalCurve.js b/esm/shapes/link/curve/LinkVerticalCurve.js
+index 6e1bcdba75640ada46570d81591b91bae277275a..56fd993926f4217efdf75602647d5ad4d1df5069 100644
+--- a/esm/shapes/link/curve/LinkVerticalCurve.js
++++ b/esm/shapes/link/curve/LinkVerticalCurve.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathVerticalCurve(_ref) {
+   let {
+diff --git a/esm/shapes/link/diagonal/LinkHorizontal.js b/esm/shapes/link/diagonal/LinkHorizontal.js
+index 045906d3cdf864a769badf204ed22e7741812e3f..6df403dd4b7d993fb7650bb90f64d89f1c2c1ebe 100644
+--- a/esm/shapes/link/diagonal/LinkHorizontal.js
++++ b/esm/shapes/link/diagonal/LinkHorizontal.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { linkHorizontal } from '@visx/vendor/d3-shape';
+-import { getY, getX, getSource, getTarget } from '../../../util/accessors';
++import { getY, getX, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathHorizontalDiagonal(_ref) {
+   let {
+diff --git a/esm/shapes/link/diagonal/LinkRadial.js b/esm/shapes/link/diagonal/LinkRadial.js
+index 4dcf5ad24164e15eed2d9e084a519fb87d8d9b4f..8f792416c8e113986804f5e58413f14bf9f0c8dd 100644
+--- a/esm/shapes/link/diagonal/LinkRadial.js
++++ b/esm/shapes/link/diagonal/LinkRadial.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { linkRadial } from '@visx/vendor/d3-shape';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathRadialDiagonal(_ref) {
+   let {
+diff --git a/esm/shapes/link/diagonal/LinkVertical.js b/esm/shapes/link/diagonal/LinkVertical.js
+index 40020ddb73217c05f6610ff70671ac294054bbd6..65628c1eedc5675b9905d6467d06d43f81fe32f6 100644
+--- a/esm/shapes/link/diagonal/LinkVertical.js
++++ b/esm/shapes/link/diagonal/LinkVertical.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { linkVertical } from '@visx/vendor/d3-shape';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathVerticalDiagonal(_ref) {
+   let {
+diff --git a/esm/shapes/link/line/LinkHorizontalLine.js b/esm/shapes/link/line/LinkHorizontalLine.js
+index 6b90facb46402cac4c644879d7c9efa281b05d9e..7d3ca1f04605941d340a267d89ec6e5d5589284e 100644
+--- a/esm/shapes/link/line/LinkHorizontalLine.js
++++ b/esm/shapes/link/line/LinkHorizontalLine.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getY, getX, getSource, getTarget } from '../../../util/accessors';
++import { getY, getX, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathHorizontalLine(_ref) {
+   let {
+diff --git a/esm/shapes/link/line/LinkRadialLine.js b/esm/shapes/link/line/LinkRadialLine.js
+index f076a18505bfba667d398be87b388d38fc1fd59e..c5b68b93a4234c3c33a2371f2289e1d16825f5ba 100644
+--- a/esm/shapes/link/line/LinkRadialLine.js
++++ b/esm/shapes/link/line/LinkRadialLine.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathRadialLine(_ref) {
+   let {
+diff --git a/esm/shapes/link/line/LinkVerticalLine.js b/esm/shapes/link/line/LinkVerticalLine.js
+index e58790107d7369a217fae0c909fb852e82120909..01b65dd32888028acda72a2e7d59cf391c4f7bae 100644
+--- a/esm/shapes/link/line/LinkVerticalLine.js
++++ b/esm/shapes/link/line/LinkVerticalLine.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathVerticalLine(_ref) {
+   let {
+diff --git a/esm/shapes/link/step/LinkHorizontalStep.js b/esm/shapes/link/step/LinkHorizontalStep.js
+index a4db9187ee453a4beca4876bb510a844e9a2ee34..5edda5e47b24f8b25d11faeaf520c6e77b53b633 100644
+--- a/esm/shapes/link/step/LinkHorizontalStep.js
++++ b/esm/shapes/link/step/LinkHorizontalStep.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathHorizontalStep(_ref) {
+   let {
+diff --git a/esm/shapes/link/step/LinkRadialStep.js b/esm/shapes/link/step/LinkRadialStep.js
+index e4e508f997771c0a31ff5fefbd62b33e1fad747b..bc9776f424b277bd588997e39ef81f7d8b957fb6 100644
+--- a/esm/shapes/link/step/LinkRadialStep.js
++++ b/esm/shapes/link/step/LinkRadialStep.js
+@@ -1,5 +1,5 @@
+ import cx from 'classnames';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathRadialStep(_ref) {
+   let {
+diff --git a/esm/shapes/link/step/LinkVerticalStep.js b/esm/shapes/link/step/LinkVerticalStep.js
+index 1b2914fc9243ebfb0d6fbd0418923a362d97bd63..f82a7ab545adef2d8bb2fc9584cbced9eaa65acc 100644
+--- a/esm/shapes/link/step/LinkVerticalStep.js
++++ b/esm/shapes/link/step/LinkVerticalStep.js
+@@ -1,6 +1,6 @@
+ import cx from 'classnames';
+ import { path as d3Path } from '@visx/vendor/d3-path';
+-import { getX, getY, getSource, getTarget } from '../../../util/accessors';
++import { getX, getY, getSource, getTarget } from '../../../util/accessors.js';
+ import { Fragment as _Fragment, jsx as _jsx } from "react/jsx-runtime";
+ export function pathVerticalStep(_ref) {
+   let {
+diff --git a/esm/util/D3ShapeFactories.js b/esm/util/D3ShapeFactories.js
+index 15f8c92d3c054bfcf62df98e426ef51844d7868f..c9601556dba8003bc94188a173831bf538fbfbda 100644
+--- a/esm/util/D3ShapeFactories.js
++++ b/esm/util/D3ShapeFactories.js
+@@ -1,7 +1,7 @@
+ import { arc as d3Arc, area as d3Area, line as d3Line, pie as d3Pie, radialLine as d3RadialLine, stack as d3Stack } from '@visx/vendor/d3-shape';
+-import setNumberOrNumberAccessor from './setNumberOrNumberAccessor';
+-import stackOrder from './stackOrder';
+-import stackOffset from './stackOffset';
++import setNumberOrNumberAccessor from './setNumberOrNumberAccessor.js';
++import stackOrder from './stackOrder.js';
++import stackOffset from './stackOffset.js';
+ export function arc() {
+   let {
+     innerRadius,
+diff --git a/esm/util/getSplitLineSegments.js b/esm/util/getSplitLineSegments.js
+index 8035147b2b1ede9cf9f99338623fb26e1b5f3ac5..465539183b6f3b178a3ba366ca3f99fd88c7dd6e 100644
+--- a/esm/util/getSplitLineSegments.js
++++ b/esm/util/getSplitLineSegments.js
+@@ -1,4 +1,4 @@
+-import getOrCreateMeasurementElement from './getOrCreateMeasurementElement';
++import getOrCreateMeasurementElement from './getOrCreateMeasurementElement.js';
+ const MEASUREMENT_ELEMENT_ID = '__visx_splitpath_svg_path_measurement_id';
+ 
+ /** Different algorithms to segment the line */

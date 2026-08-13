@@ -1,0 +1,34 @@
+diff --git a/esm/index.js b/esm/index.js
+index 977e0774bd45a04efb28887423f0bb8cc44a76bc..bf7eb727ca637dcde1e2d567d3855e3b2b092c8d 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,4 +1,4 @@
+ // @visx/point
+-export { default as Point } from './Point';
+-export { default as sumPoints } from './sumPoints';
+-export { default as subtractPoints } from './subtractPoints';
+\ No newline at end of file
++export { default as Point } from './Point.js';
++export { default as sumPoints } from './sumPoints.js';
++export { default as subtractPoints } from './subtractPoints.js';
+\ No newline at end of file
+diff --git a/esm/subtractPoints.js b/esm/subtractPoints.js
+index 36800f88d7b36b94936871ae6639decc1ef6d55b..21d04166f9acec9e5ed2f12ca35931c5be26249e 100644
+--- a/esm/subtractPoints.js
++++ b/esm/subtractPoints.js
+@@ -1,4 +1,4 @@
+-import Point from './Point';
++import Point from './Point.js';
+ export default function subtractPoints(point1, point2) {
+   return new Point({
+     x: point1.x - point2.x,
+diff --git a/esm/sumPoints.js b/esm/sumPoints.js
+index d3562dc6dc048fbdbfdab871605dbe653a47a350..841218d513052cd68140bb8f9f2f6df9d725b1be 100644
+--- a/esm/sumPoints.js
++++ b/esm/sumPoints.js
+@@ -1,4 +1,4 @@
+-import Point from './Point';
++import Point from './Point.js';
+ export default function sumPoints(point1, point2) {
+   return new Point({
+     x: point1.x + point2.x,

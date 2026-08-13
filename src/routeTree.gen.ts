@@ -18,6 +18,7 @@ import { Route as authSignupRouteImport } from './routes/(auth)/signup'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as AppAccountsIndexRouteImport } from './routes/_app/accounts/index'
 import { Route as AppAccountsAccountIdRouteImport } from './routes/_app/accounts/$accountId'
+import { Route as AppCategoriesIndexRouteImport } from './routes/_app/categories/index'
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
 import { Route as AppTransactionsIndexRouteImport } from './routes/_app/transactions/index'
 import { Route as AppTransactionsTransactionIdRouteImport } from './routes/_app/transactions/$transactionId'
@@ -67,6 +68,11 @@ const AppAccountsAccountIdRoute = AppAccountsAccountIdRouteImport.update({
   path: '/accounts/$accountId',
   getParentRoute: () => AppRoute,
 } as any)
+const AppCategoriesIndexRoute = AppCategoriesIndexRouteImport.update({
+  id: '/categories/',
+  path: '/categories/',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppDashboardIndexRoute = AppDashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
@@ -100,6 +106,7 @@ export interface FileRoutesByFullPath {
   '/transactions/$transactionId': typeof AppTransactionsTransactionIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/accounts/': typeof AppAccountsIndexRoute
+  '/categories/': typeof AppCategoriesIndexRoute
   '/dashboard/': typeof AppDashboardIndexRoute
   '/transactions/': typeof AppTransactionsIndexRoute
 }
@@ -114,6 +121,7 @@ export interface FileRoutesByTo {
   '/transactions/$transactionId': typeof AppTransactionsTransactionIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/accounts': typeof AppAccountsIndexRoute
+  '/categories': typeof AppCategoriesIndexRoute
   '/dashboard': typeof AppDashboardIndexRoute
   '/transactions': typeof AppTransactionsIndexRoute
 }
@@ -130,6 +138,7 @@ export interface FileRoutesById {
   '/_app/transactions/$transactionId': typeof AppTransactionsTransactionIdRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/accounts/': typeof AppAccountsIndexRoute
+  '/_app/categories/': typeof AppCategoriesIndexRoute
   '/_app/dashboard/': typeof AppDashboardIndexRoute
   '/_app/transactions/': typeof AppTransactionsIndexRoute
 }
@@ -146,6 +155,7 @@ export interface FileRouteTypes {
     | '/transactions/$transactionId'
     | '/api/auth/$'
     | '/accounts/'
+    | '/categories/'
     | '/dashboard/'
     | '/transactions/'
   fileRoutesByTo: FileRoutesByTo
@@ -160,6 +170,7 @@ export interface FileRouteTypes {
     | '/transactions/$transactionId'
     | '/api/auth/$'
     | '/accounts'
+    | '/categories'
     | '/dashboard'
     | '/transactions'
   id:
@@ -175,6 +186,7 @@ export interface FileRouteTypes {
     | '/_app/transactions/$transactionId'
     | '/api/auth/$'
     | '/_app/accounts/'
+    | '/_app/categories/'
     | '/_app/dashboard/'
     | '/_app/transactions/'
   fileRoutesById: FileRoutesById
@@ -255,6 +267,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppAccountsAccountIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/categories/': {
+      id: '/_app/categories/'
+      path: '/categories'
+      fullPath: '/categories/'
+      preLoaderRoute: typeof AppCategoriesIndexRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/_app/dashboard/': {
       id: '/_app/dashboard/'
       path: '/dashboard'
@@ -290,6 +309,7 @@ interface AppRouteChildren {
   AppAccountsAccountIdRoute: typeof AppAccountsAccountIdRoute
   AppTransactionsTransactionIdRoute: typeof AppTransactionsTransactionIdRoute
   AppAccountsIndexRoute: typeof AppAccountsIndexRoute
+  AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
   AppDashboardIndexRoute: typeof AppDashboardIndexRoute
   AppTransactionsIndexRoute: typeof AppTransactionsIndexRoute
 }
@@ -298,6 +318,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppAccountsAccountIdRoute: AppAccountsAccountIdRoute,
   AppTransactionsTransactionIdRoute: AppTransactionsTransactionIdRoute,
   AppAccountsIndexRoute: AppAccountsIndexRoute,
+  AppCategoriesIndexRoute: AppCategoriesIndexRoute,
   AppDashboardIndexRoute: AppDashboardIndexRoute,
   AppTransactionsIndexRoute: AppTransactionsIndexRoute,
 }

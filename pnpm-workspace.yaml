@@ -2,3 +2,12 @@ allowBuilds:
   esbuild: true
   lightningcss: true
   better-sqlite3: true
+patchedDependencies:
+  '@visx/event@4.0.1-alpha.0': patches/@visx__event@4.0.1-alpha.0.patch
+  '@visx/gradient@4.0.1-alpha.0': patches/@visx__gradient@4.0.1-alpha.0.patch
+  '@visx/grid@4.0.1-alpha.0': patches/@visx__grid@4.0.1-alpha.0.patch
+  '@visx/group': patches/@visx__group.patch
+  '@visx/point': patches/@visx__point.patch
+  '@visx/responsive@4.0.1-alpha.0': patches/@visx__responsive@4.0.1-alpha.0.patch
+  '@visx/scale@4.0.1-alpha.0': patches/@visx__scale@4.0.1-alpha.0.patch
+  '@visx/shape@4.0.1-alpha.0': patches/@visx__shape@4.0.1-alpha.0.patch

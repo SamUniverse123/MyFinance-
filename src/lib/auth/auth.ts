@@ -2,6 +2,7 @@ import { betterAuth } from "better-auth";
 import { tanstackStartCookies } from "better-auth/tanstack-start";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { db } from "@/db";
+import { categories } from "@/db/schema";
 import { sendEmailVerificationEmail } from "@/lib/email/email-validation";
 import { sendResetPasswordEmail } from "../email/reset-password-email";
 
@@ -39,9 +40,26 @@ export const auth = betterAuth({
 
 	account: {
         accountLinking: {
-            enabled: true, 
+            enabled: true,
         }
     },
+
+	// ADR-0002: every user gets their own copy of the system categories — there's no
+	// global row, since `categories.userId` is required.
+	databaseHooks: {
+		user: {
+			create: {
+				after: async (user) => {
+					await db.insert(categories).values({
+						userId: user.id,
+						name: "Balance Adjustment",
+						kind: "expense",
+						isSystem: true,
+					});
+				},
+			},
+		},
+	},
 
 
 	session: {

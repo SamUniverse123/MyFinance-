@@ -3,6 +3,8 @@ import { HTTPException } from 'hono/http-exception'
 import { requireAuth } from "./middleware/auth";
 import accounts from "./routes/accounts";
 import transactions from "./routes/transactions"
+import categories from "./routes/categories"
+import dashboard from "./routes/dashboard"
 import { AppError } from "#/server/lib/error";
 import { ZodError } from "zod";
 
@@ -10,7 +12,9 @@ const app = new Hono()
 	.basePath("/api")
 	.use("*", requireAuth)
 	.route("/accounts", accounts)
-	.route("/transactions", transactions);
+	.route("/transactions", transactions)
+	.route("/categories", categories)
+	.route("/dashboard", dashboard);
 
 
 

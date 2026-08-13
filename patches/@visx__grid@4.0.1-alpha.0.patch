@@ -1,0 +1,86 @@
+diff --git a/esm/grids/Grid.js b/esm/grids/Grid.js
+index b4466f8fffb8f23782dc1bfddb4a3eb583aa9821..e38e7d0e2a778c7e17bdbc39f86d99a6ec7b76e7 100644
+--- a/esm/grids/Grid.js
++++ b/esm/grids/Grid.js
+@@ -1,7 +1,7 @@
+ import cx from 'classnames';
+ import { Group } from '@visx/group';
+-import GridRows from './GridRows';
+-import GridColumns from './GridColumns';
++import GridRows from './GridRows.js';
++import GridColumns from './GridColumns.js';
+ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+ export default function Grid(_ref) {
+   let {
+diff --git a/esm/grids/GridAngle.js b/esm/grids/GridAngle.js
+index e85d92e127e5c349ecb862ad540a6a3041e79fd1..ca8a1aff639da503978dfd96171e0bc2ee8d3074 100644
+--- a/esm/grids/GridAngle.js
++++ b/esm/grids/GridAngle.js
+@@ -3,7 +3,7 @@ import { Line } from '@visx/shape';
+ import { Group } from '@visx/group';
+ import { getTicks, coerceNumber } from '@visx/scale';
+ import { Point } from '@visx/point';
+-import polarToCartesian from '../utils/polarToCartesian';
++import polarToCartesian from '../utils/polarToCartesian.js';
+ import { jsx as _jsx } from "react/jsx-runtime";
+ export default function GridAngle(_ref) {
+   let {
+diff --git a/esm/grids/GridColumns.js b/esm/grids/GridColumns.js
+index cdf4a803fe098c37f4fa63732c9a7a6cbb0168b2..532d7d7b9491d2883964df109f2f789ea582bb9e 100644
+--- a/esm/grids/GridColumns.js
++++ b/esm/grids/GridColumns.js
+@@ -3,7 +3,7 @@ import { Line } from '@visx/shape';
+ import { Group } from '@visx/group';
+ import { Point } from '@visx/point';
+ import { getTicks, coerceNumber } from '@visx/scale';
+-import getScaleBandwidth from '../utils/getScaleBandwidth';
++import getScaleBandwidth from '../utils/getScaleBandwidth.js';
+ import { jsx as _jsx } from "react/jsx-runtime";
+ export default function GridColumns(_ref) {
+   let {
+diff --git a/esm/grids/GridPolar.js b/esm/grids/GridPolar.js
+index 6f7e2f6464c58d6947cacd9fa78a4b31bee011a3..c180774ae0b5abb20341d88129d7528a3eb31047 100644
+--- a/esm/grids/GridPolar.js
++++ b/esm/grids/GridPolar.js
+@@ -1,7 +1,7 @@
+ import cx from 'classnames';
+ import { Group } from '@visx/group';
+-import GridAngle from './GridAngle';
+-import GridRadial from './GridRadial';
++import GridAngle from './GridAngle.js';
++import GridRadial from './GridRadial.js';
+ import { jsx as _jsx, jsxs as _jsxs } from "react/jsx-runtime";
+ export default function GridPolar(_ref) {
+   let {
+diff --git a/esm/grids/GridRows.js b/esm/grids/GridRows.js
+index 6a552808d287b9c9f3a1de10de147b9b4ea45694..aad8e33754d546ab13f502f0332ed5c43503213a 100644
+--- a/esm/grids/GridRows.js
++++ b/esm/grids/GridRows.js
+@@ -3,7 +3,7 @@ import { Line } from '@visx/shape';
+ import { Group } from '@visx/group';
+ import { Point } from '@visx/point';
+ import { getTicks, coerceNumber } from '@visx/scale';
+-import getScaleBandwidth from '../utils/getScaleBandwidth';
++import getScaleBandwidth from '../utils/getScaleBandwidth.js';
+ import { jsx as _jsx } from "react/jsx-runtime";
+ export default function GridRows(_ref) {
+   let {
+diff --git a/esm/index.js b/esm/index.js
+index f270cea3d993e438d96166b9e182d3ae6da14aca..8619d8119208ab119f3e5d939a5ed705d7837f03 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,7 +1,7 @@
+ // @visx/grid
+-export { default as GridRows } from './grids/GridRows';
+-export { default as GridColumns } from './grids/GridColumns';
+-export { default as Grid } from './grids/Grid';
+-export { default as GridAngle } from './grids/GridAngle';
+-export { default as GridRadial } from './grids/GridRadial';
+-export { default as GridPolar } from './grids/GridPolar';
+\ No newline at end of file
++export { default as GridRows } from './grids/GridRows.js';
++export { default as GridColumns } from './grids/GridColumns.js';
++export { default as Grid } from './grids/Grid.js';
++export { default as GridAngle } from './grids/GridAngle.js';
++export { default as GridRadial } from './grids/GridRadial.js';
++export { default as GridPolar } from './grids/GridPolar.js';

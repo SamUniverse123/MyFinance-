@@ -1,0 +1,131 @@
+diff --git a/esm/gradients/GradientDarkgreenGreen.js b/esm/gradients/GradientDarkgreenGreen.js
+index 0d2057f0653121f9380187e4083f84b8be34a3de..e0a4e91bf3dd678aa9bb2b03b51a0539278fcc8a 100644
+--- a/esm/gradients/GradientDarkgreenGreen.js
++++ b/esm/gradients/GradientDarkgreenGreen.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientLightgreenGreen.js b/esm/gradients/GradientLightgreenGreen.js
+index 6de6f9378faf682a9696aa279e22f223958bdd5d..01fadd92e85b84e6c9640b6b0e2a094a034248f0 100644
+--- a/esm/gradients/GradientLightgreenGreen.js
++++ b/esm/gradients/GradientLightgreenGreen.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientOrangeRed.js b/esm/gradients/GradientOrangeRed.js
+index 7dcd48f2f3b0bf25f2bc37fff2171d8c0cec71bc..90c80cc349b403c7c877aa1fedef278aa089a5f3 100644
+--- a/esm/gradients/GradientOrangeRed.js
++++ b/esm/gradients/GradientOrangeRed.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientPinkBlue.js b/esm/gradients/GradientPinkBlue.js
+index b1050361acf5f06c7b32051899ede61791c46e1f..d788b3aaa9b73f4c0e1dda463f89affdbf59b889 100644
+--- a/esm/gradients/GradientPinkBlue.js
++++ b/esm/gradients/GradientPinkBlue.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientPinkRed.js b/esm/gradients/GradientPinkRed.js
+index 04f0407c91cc62bdf68cc5ed2c837c57246e3ad3..7c04dd9fb1a92fc95698f4f8a5291e3d757c0ddf 100644
+--- a/esm/gradients/GradientPinkRed.js
++++ b/esm/gradients/GradientPinkRed.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientPurpleOrange.js b/esm/gradients/GradientPurpleOrange.js
+index cbb247efef11cc17faf0fba55aee0e716b8d08c2..08d8b353db7628ebf8b04c07968dae64cd277ae9 100644
+--- a/esm/gradients/GradientPurpleOrange.js
++++ b/esm/gradients/GradientPurpleOrange.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientPurpleRed.js b/esm/gradients/GradientPurpleRed.js
+index 77ff58b89789f692f13dd738065ac86cac7e015f..5be3b3b6dfb6a5d35665e427abba456fb439d878 100644
+--- a/esm/gradients/GradientPurpleRed.js
++++ b/esm/gradients/GradientPurpleRed.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientPurpleTeal.js b/esm/gradients/GradientPurpleTeal.js
+index 3f10ad222999c23012770bad613145c1083357cb..6f9bdf933e6e8bea777ea4f35afafe5623a4b7c6 100644
+--- a/esm/gradients/GradientPurpleTeal.js
++++ b/esm/gradients/GradientPurpleTeal.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientSteelPurple.js b/esm/gradients/GradientSteelPurple.js
+index 72b4cf795f179589cf334dc2cdc06ca8fa8970ca..3d75e5e17ef6ec103e0d7161ac93389770fbef64 100644
+--- a/esm/gradients/GradientSteelPurple.js
++++ b/esm/gradients/GradientSteelPurple.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/gradients/GradientTealBlue.js b/esm/gradients/GradientTealBlue.js
+index 608d2c8caa1afbcaadc89c451e07042570a2a0ef..432530e707dab8295d467f293bedc85a1b190b20 100644
+--- a/esm/gradients/GradientTealBlue.js
++++ b/esm/gradients/GradientTealBlue.js
+@@ -1,4 +1,4 @@
+-import LinearGradient from './LinearGradient';
++import LinearGradient from './LinearGradient.js';
+ 
+ /**
+  * All props pass through to `<LinearGradient {...props} />`
+diff --git a/esm/index.js b/esm/index.js
+index 8329cd96654284b5000a1aff4146de919b4a37bb..dfa5b1789c9ec4c2d6f1bc8244c6977257bfe2c4 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,13 +1,13 @@
+ // @visx/gradient
+-export { default as LinearGradient } from './gradients/LinearGradient';
+-export { default as RadialGradient } from './gradients/RadialGradient';
+-export { default as GradientDarkgreenGreen } from './gradients/GradientDarkgreenGreen';
+-export { default as GradientLightgreenGreen } from './gradients/GradientLightgreenGreen';
+-export { default as GradientOrangeRed } from './gradients/GradientOrangeRed';
+-export { default as GradientPinkBlue } from './gradients/GradientPinkBlue';
+-export { default as GradientPinkRed } from './gradients/GradientPinkRed';
+-export { default as GradientPurpleOrange } from './gradients/GradientPurpleOrange';
+-export { default as GradientPurpleRed } from './gradients/GradientPurpleRed';
+-export { default as GradientPurpleTeal } from './gradients/GradientPurpleTeal';
+-export { default as GradientSteelPurple } from './gradients/GradientSteelPurple';
+-export { default as GradientTealBlue } from './gradients/GradientTealBlue';
+\ No newline at end of file
++export { default as LinearGradient } from './gradients/LinearGradient.js';
++export { default as RadialGradient } from './gradients/RadialGradient.js';
++export { default as GradientDarkgreenGreen } from './gradients/GradientDarkgreenGreen.js';
++export { default as GradientLightgreenGreen } from './gradients/GradientLightgreenGreen.js';
++export { default as GradientOrangeRed } from './gradients/GradientOrangeRed.js';
++export { default as GradientPinkBlue } from './gradients/GradientPinkBlue.js';
++export { default as GradientPinkRed } from './gradients/GradientPinkRed.js';
++export { default as GradientPurpleOrange } from './gradients/GradientPurpleOrange.js';
++export { default as GradientPurpleRed } from './gradients/GradientPurpleRed.js';
++export { default as GradientPurpleTeal } from './gradients/GradientPurpleTeal.js';
++export { default as GradientSteelPurple } from './gradients/GradientSteelPurple.js';
++export { default as GradientTealBlue } from './gradients/GradientTealBlue.js';

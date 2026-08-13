@@ -103,6 +103,14 @@ export const categories = pgTable('categories', {
 }, (t) => [
   index('categories_user_idx').on(t.userId),
   index('categories_parent_idx').on(t.parentId),
+  // ADR-0004: uniqueness is scoped to (user, parent, kind), not global per user —
+  // "Other" may recur as a subcategory under different parents.
+  uniqueIndex('categories_top_level_name_uq')
+    .on(t.userId, t.kind, sql`lower(${t.name})`)
+    .where(sql`${t.parentId} is null`),
+  uniqueIndex('categories_child_name_uq')
+    .on(t.parentId, sql`lower(${t.name})`)
+    .where(sql`${t.parentId} is not null`),
 ])
  
 export const payees = pgTable('payees', {

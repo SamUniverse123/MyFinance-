@@ -1,0 +1,69 @@
+diff --git a/esm/components/ParentSize.js b/esm/components/ParentSize.js
+index 8fe1d68d253ec10783aa68abb77cc3d958af2b6a..afadf23fd34f33f10cf354e49eca27c22fbb5a55 100644
+--- a/esm/components/ParentSize.js
++++ b/esm/components/ParentSize.js
+@@ -1,4 +1,4 @@
+-import useParentSize from '../hooks/useParentSize';
++import useParentSize from '../hooks/useParentSize.js';
+ import { jsx as _jsx } from "react/jsx-runtime";
+ const defaultParentSizeStyles = {
+   width: '100%',
+diff --git a/esm/enhancers/withParentSize.js b/esm/enhancers/withParentSize.js
+index e8956a100112e817e3f7a6d890ac775d78e269ec..fd301a5080fb9777250ee865f7942ab4919f5cc3 100644
+--- a/esm/enhancers/withParentSize.js
++++ b/esm/enhancers/withParentSize.js
+@@ -1,4 +1,4 @@
+-import debounce from 'lodash/debounce';
++import debounce from 'lodash/debounce.js';
+ import { Component } from 'react';
+ import { jsx as _jsx } from "react/jsx-runtime";
+ const CONTAINER_STYLES = {
+diff --git a/esm/enhancers/withScreenSize.js b/esm/enhancers/withScreenSize.js
+index f1bcc45a7699809f46c3adb6eb900d0f3c42bb81..5b66baa9989b19673f57683c96b0b077cee93dbc 100644
+--- a/esm/enhancers/withScreenSize.js
++++ b/esm/enhancers/withScreenSize.js
+@@ -1,4 +1,4 @@
+-import debounce from 'lodash/debounce';
++import debounce from 'lodash/debounce.js';
+ import { Component } from 'react';
+ 
+ /**
+diff --git a/esm/hooks/useParentSize.js b/esm/hooks/useParentSize.js
+index cedf97ccf2aaeb32f95dfd0907c6bcaffe1c9a99..80a3d7823035b02e61279707e0cf4ce6eb8a5c98 100644
+--- a/esm/hooks/useParentSize.js
++++ b/esm/hooks/useParentSize.js
+@@ -1,4 +1,4 @@
+-import debounce from 'lodash/debounce';
++import debounce from 'lodash/debounce.js';
+ import { useEffect, useMemo, useRef, useState } from 'react';
+ const defaultIgnoreDimensions = [];
+ const defaultInitialSize = {
+diff --git a/esm/hooks/useScreenSize.js b/esm/hooks/useScreenSize.js
+index 200341cfa97af857dd234205da6a3f558bcfba7a..fb5be858622e8775b00f9b21d1630036668566d8 100644
+--- a/esm/hooks/useScreenSize.js
++++ b/esm/hooks/useScreenSize.js
+@@ -1,4 +1,4 @@
+-import debounce from 'lodash/debounce';
++import debounce from 'lodash/debounce.js';
+ import { useEffect, useMemo, useState } from 'react';
+ const defaultInitialSize = {
+   width: 0,
+diff --git a/esm/index.js b/esm/index.js
+index 2a4664135d45e0c90f9efe65d25938476752b623..1a5bfca5de94e4a81cff0613128540ce93c81ba5 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,7 +1,7 @@
+ // @visx/responsive
+-export { default as ParentSize } from './components/ParentSize';
+-export { default as ScaleSVG } from './components/ScaleSVG';
+-export { default as withParentSize } from './enhancers/withParentSize';
+-export { default as withScreenSize } from './enhancers/withScreenSize';
+-export { default as useParentSize } from './hooks/useParentSize';
+-export { default as useScreenSize } from './hooks/useScreenSize';
+\ No newline at end of file
++export { default as ParentSize } from './components/ParentSize.js';
++export { default as ScaleSVG } from './components/ScaleSVG.js';
++export { default as withParentSize } from './enhancers/withParentSize.js';
++export { default as withScreenSize } from './enhancers/withScreenSize.js';
++export { default as useParentSize } from './hooks/useParentSize.js';
++export { default as useScreenSize } from './hooks/useScreenSize.js';

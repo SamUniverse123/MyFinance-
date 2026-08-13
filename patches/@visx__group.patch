@@ -1,0 +1,9 @@
+diff --git a/esm/index.js b/esm/index.js
+index cd659dd0c9a58cd920284f2cbdf31cf4727b3702..ef4ed7b8e61aa9fbbeed8dbf3f628d231998a1fb 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,2 +1,2 @@
+ // @visx/group
+-export { default as Group } from './Group';
+\ No newline at end of file
++export { default as Group } from './Group.js';

@@ -1,0 +1,56 @@
+diff --git a/esm/getXAndYFromEvent.js b/esm/getXAndYFromEvent.js
+index 4e87851a27883fcef2dd5c4fe4ae0dd5c5311c60..e54badfa73793955b423a3034d5a5c4b20cbc9c5 100644
+--- a/esm/getXAndYFromEvent.js
++++ b/esm/getXAndYFromEvent.js
+@@ -1,4 +1,4 @@
+-import { isMouseEvent, isTouchEvent } from './typeGuards';
++import { isMouseEvent, isTouchEvent } from './typeGuards.js';
+ const DEFAULT_POINT = {
+   x: 0,
+   y: 0
+diff --git a/esm/index.js b/esm/index.js
+index a9bee3ffb080e9fd03eea53dd9bdb0d0e10912c3..86660cc3a0356b6ac9d152983203e500cadbb08c 100644
+--- a/esm/index.js
++++ b/esm/index.js
+@@ -1,3 +1,3 @@
+ // @visx/event
+-export { default as localPoint } from './localPoint';
+-export { default as touchPoint } from './touchPoint';
+\ No newline at end of file
++export { default as localPoint } from './localPoint.js';
++export { default as touchPoint } from './touchPoint.js';
+\ No newline at end of file
+diff --git a/esm/localPoint.js b/esm/localPoint.js
+index 86ae0e2b70b6c65d60a69bc6a59cd8fbd8da396f..9c7f4c5c24ee0c6228581a03bb4324892bd12a45 100644
+--- a/esm/localPoint.js
++++ b/esm/localPoint.js
+@@ -1,5 +1,5 @@
+-import localPointGeneric from './localPointGeneric';
+-import { isElement, isEvent } from './typeGuards';
++import localPointGeneric from './localPointGeneric.js';
++import { isElement, isEvent } from './typeGuards.js';
+ 
+ /** Handles two signatures for backwards compatibility. */
+ export default function localPoint(nodeOrEvent, maybeEvent) {
+diff --git a/esm/localPointGeneric.js b/esm/localPointGeneric.js
+index 406096d12b6b598f600b0e34575acb5b75c6e999..9905e7c3d7ee4fae308681fe22dbfdf0e5fcd308 100644
+--- a/esm/localPointGeneric.js
++++ b/esm/localPointGeneric.js
+@@ -1,6 +1,6 @@
+ import { Point } from '@visx/point';
+-import { isSVGElement, isSVGGraphicsElement, isSVGSVGElement } from './typeGuards';
+-import getXAndYFromEvent from './getXAndYFromEvent';
++import { isSVGElement, isSVGGraphicsElement, isSVGSVGElement } from './typeGuards.js';
++import getXAndYFromEvent from './getXAndYFromEvent.js';
+ export default function localPoint(node, event) {
+   if (!node || !event) return null;
+   const coords = getXAndYFromEvent(event);
+diff --git a/esm/touchPoint.js b/esm/touchPoint.js
+index 451eb3dd92677e0f1c4870496e87d8fd862d0dda..59231235a80b2b82b2312732c4dc39b896bbdce0 100644
+--- a/esm/touchPoint.js
++++ b/esm/touchPoint.js
+@@ -1,2 +1,2 @@
+ // eslint-disable-next-line no-restricted-exports
+-export { default } from './localPointGeneric';
+\ No newline at end of file
++export { default } from './localPointGeneric.js';
