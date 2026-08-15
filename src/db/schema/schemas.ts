@@ -55,6 +55,33 @@ export const userSettings = pgTable('user_settings', {
   weekStart: smallint('week_start').notNull().default(1), // 0=Sun, 1=Mon
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 })
+
+// ADR-0009: currencies are never converted/blended, so a budget is scoped to one
+// currency — a MYR budget and an SGD budget are independent numbers. Monthly only
+// (no period column) since that's the only period this app supports today.
+export const budgets = pgTable('budgets', {
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  currency: char('currency', { length: 3 }).notNull(),
+  amount: bigint('amount', { mode: 'number' }).notNull(), // minor units, monthly spend limit
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  primaryKey({ columns: [t.userId, t.currency] }),
+])
+
+// ADR-0010: per-currency monthly limit on a single top-level expense category. Keyed
+// (categoryId, currency) — categoryId already implies the user; currency scopes it (a
+// category may be budgeted independently in MYR and SGD). Additive to `budgets`; the
+// two layers are independent.
+export const categoryBudgets = pgTable('category_budgets', {
+  userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
+  categoryId: uuid('category_id').notNull().references(() => categories.id, { onDelete: 'cascade' }),
+  currency: char('currency', { length: 3 }).notNull(),
+  amount: bigint('amount', { mode: 'number' }).notNull(), // minor units, monthly spend limit
+  updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
+}, (t) => [
+  primaryKey({ columns: [t.categoryId, t.currency] }),
+  index('category_budgets_user_idx').on(t.userId),
+])
  
 /* ── SPLIT: ledger.ts (accounts, categories, payees, tags, scheduled, transactions,
       splits, transaction_tags, rules — keep these together to avoid cycles) ───── */

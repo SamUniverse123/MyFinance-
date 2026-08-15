@@ -10,6 +10,8 @@
 
 export { Area } from "./area";
 export { AreaChart } from "./area-chart";
+export { Candlestick } from "./candlestick";
+export { CandlestickChart, type OHLCDataPoint } from "./candlestick-chart";
 export { useChart } from "./chart-context";
 export { ChartStatFlow, type ChartStatFlowFormat } from "./chart-stat-flow";
 export { Line } from "./line";

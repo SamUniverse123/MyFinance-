@@ -1,21 +1,41 @@
 import * as React from "react"
 
 import { cn } from "#/lib/utils.ts"
+import { usePointerSheen } from "#/hooks/use-pointer-sheen.ts"
 
 function Card({
   className,
   size = "default",
+  metallic = false,
+  spun,
+  sheen,
   ...props
-}: React.ComponentProps<"div"> & { size?: "default" | "sm" }) {
+}: React.ComponentProps<"div"> & {
+  size?: "default" | "sm"
+  metallic?: boolean | "gold"
+  spun?: "gold" | "silver" | "bronze" | "titanium"
+  /** Make the metal highlight follow the cursor on hover. Defaults on when a
+   *  metal finish (metallic/spun) is set; pass `false` to disable. */
+  sheen?: boolean
+}) {
+  const isMetal = Boolean(metallic) || Boolean(spun)
+  const trackSheen = sheen ?? isMetal
+  const sheenProps = usePointerSheen<HTMLDivElement>()
+
   return (
     <div
       data-slot="card"
       data-size={size}
       className={cn(
-        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl",
+        "group/card flex flex-col gap-(--card-spacing) overflow-hidden rounded-xl bg-card py-(--card-spacing) text-sm text-card-foreground ring-1 ring-foreground/10 [--card-spacing:--spacing(4)] has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:[--card-spacing:--spacing(3)] data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl bg-olive-50 inset-shadow-xs",
+        metallic && "metallic",
+        metallic === "gold" && "metallic-gold",
+        spun && `spun-metal spun-${spun}`,
+        trackSheen && "metal-tilt",
         className
       )}
       {...props}
+      {...(trackSheen ? sheenProps : {})}
     />
   )
 }

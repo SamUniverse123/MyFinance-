@@ -17,18 +17,20 @@ import {
 	EmptyTitle,
 } from "#/components/ui/empty";
 import { Skeleton } from "#/components/ui/skeleton";
-import { ToggleGroup, ToggleGroupItem } from "#/components/ui/toggle-group";
-import { Area, AreaChart } from "@/components/charts";
+import { Candlestick, CandlestickChart } from "@/components/charts";
 import { Grid } from "@/components/charts/grid";
 import { ChartTooltip } from "@/components/charts/tooltip";
 import { XAxis } from "@/components/charts/x-axis";
+import { CurrencyToggle } from "@/components/currency-toggle";
+import { PageBreadcrumb } from "@/components/page-breadcrumb";
 import { SiteHeader } from "@/components/site-header";
-import { StatCardArea } from "@/components/stat-card-area";
-import { StatCardLine } from "@/components/stat-card-line";
 import {
 	accountsListOptions,
 	useGetAccounts,
 } from "@/features/accounts/queries";
+import { BudgetCard } from "@/features/dashboard/components/budget-card";
+import { MonthlySpendingCalendar } from "@/features/dashboard/components/monthly-spending-calendar";
+import { NetWorthHero } from "@/features/dashboard/components/net-worth-hero";
 import {
 	dashboardSummaryOptions,
 	useGetDashboardSummary,
@@ -44,38 +46,47 @@ type Range = (typeof RANGES)[number];
 
 const dashboardSearchSchema = z.object({
 	range: z.enum(RANGES).default("30d").catch("30d"),
+	// No default here — an absent/unrecognized currency falls back to the user's
+	// default currency server-side (see dashboard.ts), which needs the account data
+	// this page doesn't have client-side until the summary itself comes back.
+	currency: z.string().optional().catch(undefined),
 });
 
 export const Route = createFileRoute("/_app/dashboard/")({
 	validateSearch: dashboardSearchSchema,
-	loaderDeps: ({ search }) => ({ range: search.range }),
+	loaderDeps: ({ search }) => ({
+		range: search.range,
+		currency: search.currency,
+	}),
 	loader: ({ context, deps }) =>
 		Promise.all([
-			context.queryClient.ensureQueryData(dashboardSummaryOptions(deps.range)),
+			context.queryClient.ensureQueryData(
+				dashboardSummaryOptions(deps.range, deps.currency),
+			),
 			context.queryClient.ensureQueryData(accountsListOptions()),
 			context.queryClient.ensureQueryData(transactionsListOptions()),
 		]),
 	component: DashboardPage,
 });
 
-/** minor units → display units (the stat cards/chart deal in whole currency amounts). */
+/** minor units → display units (the cards/charts deal in whole currency amounts). */
 function toMajor(minorUnits: number): number {
 	return minorUnits / 100;
 }
 
-/** % change from the first point to the last — undefined when there's nothing to compare against. */
-function calcTrend(series: { value: number }[]): number | undefined {
-	const first = series[0]?.value;
-	const last = series.at(-1)?.value;
-	if (first === undefined || last === undefined || first === 0)
-		return undefined;
-	return ((last - first) / Math.abs(first)) * 100;
-}
-
-function PageShell({ children }: { children: React.ReactNode }) {
+function PageShell({
+	children,
+	actions,
+}: {
+	children: React.ReactNode;
+	actions?: React.ReactNode;
+}) {
 	return (
 		<>
-			<SiteHeader title="Dashboard" />
+			<SiteHeader
+				breadcrumb={<PageBreadcrumb items={[{ label: "Dashboard" }]} />}
+				actions={actions}
+			/>
 			<div className="flex flex-1 flex-col">
 				<div className="@container/main flex flex-1 flex-col">
 					<div className="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
@@ -88,7 +99,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
 }
 
 function DashboardPage() {
-	const { range } = Route.useSearch();
+	const { range, currency: currencyParam } = Route.useSearch();
 	const navigate = Route.useNavigate();
 
 	const {
@@ -96,21 +107,22 @@ function DashboardPage() {
 		isPending,
 		isError,
 		refetch,
-	} = useGetDashboardSummary(range);
+	} = useGetDashboardSummary(range, currencyParam);
 	const { data: accounts } = useGetAccounts();
 	const { data: transactions } = useGetTransactions();
 
 	if (isPending) {
 		return (
 			<PageShell>
-				<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-					<Skeleton className="h-48 rounded-xl" />
-					<Skeleton className="h-48 rounded-xl" />
-					<Skeleton className="h-48 rounded-xl" />
-					<Skeleton className="h-48 rounded-xl" />
+				<div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+					<Skeleton className="h-72 rounded-xl xl:col-span-3" />
+					<Skeleton className="h-72 rounded-xl" />
 				</div>
 				<Skeleton className="h-80 w-full rounded-xl" />
-				<Skeleton className="h-64 w-full rounded-xl" />
+				<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+					<Skeleton className="h-72 rounded-xl" />
+					<Skeleton className="h-72 rounded-xl" />
+				</div>
 			</PageShell>
 		);
 	}
@@ -140,77 +152,70 @@ function DashboardPage() {
 		);
 	}
 
-	const moneyFormat = {
-		style: "currency" as const,
-		currency: summary.currency,
-		maximumFractionDigits: 0,
-	};
+	// Merge (not replace) search params — range and currency toggle independently
+	// without clobbering each other.
+	const setRange = (next: Range) =>
+		navigate({ search: (prev) => ({ ...prev, range: next }) });
+	const setCurrency = (next: string) =>
+		navigate({ search: (prev) => ({ ...prev, currency: next }) });
 
 	const netWorthSeries = summary.netWorthSeries.map((d) => ({
 		date: new Date(d.date),
 		value: toMajor(d.value),
 	}));
-	const incomeSeries = summary.cashflow.map((d) => ({
-		date: new Date(d.date),
-		value: toMajor(d.income),
-	}));
-	const expenseSeries = summary.cashflow.map((d) => ({
-		date: new Date(d.date),
-		value: toMajor(d.expense),
-	}));
-	const cashflowSeries = summary.cashflow.map((d) => ({
-		date: new Date(d.date),
-		value: toMajor(d.income - d.expense),
-	}));
-	const chartData = summary.cashflow.map((d) => ({
-		date: d.date,
-		income: toMajor(d.income),
-		expense: toMajor(d.expense),
-	}));
+
+	// Each day as a candle: open=0, close=net (income-expense), high=income (gross in),
+	// low=-expense (gross out). Always a valid candle; wick = gross in/out, body = net,
+	// colored green/red by sign.
+	const candlestickData = summary.cashflow.map((d) => {
+		const income = toMajor(d.income);
+		const expense = toMajor(d.expense);
+		return {
+			date: new Date(d.date),
+			open: 0,
+			high: income,
+			low: -expense,
+			close: income - expense,
+			income,
+			expense,
+		};
+	});
+	const moneyFmt = new Intl.NumberFormat(undefined, {
+		style: "currency",
+		currency: summary.currency,
+		maximumFractionDigits: 0,
+	});
 
 	return (
-		<PageShell>
-			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
-				<StatCardArea
-					title="Net worth"
-					data={netWorthSeries}
-					value={netWorthSeries.at(-1)?.value ?? 0}
-					trend={calcTrend(netWorthSeries)}
-					formatOptions={moneyFormat}
+		<PageShell
+			actions={
+				<CurrencyToggle
+					currencies={summary.availableCurrencies}
+					value={summary.currency}
+					onChange={setCurrency}
 				/>
-				<StatCardLine
-					title="Income this month"
-					data={incomeSeries}
-					value={toMajor(summary.month.income)}
-					formatOptions={moneyFormat}
-				/>
-				<StatCardLine
-					title="Expenses this month"
-					data={expenseSeries}
-					value={toMajor(summary.month.expense)}
-					formatOptions={moneyFormat}
-				/>
-				<StatCardArea
-					title="Net cashflow"
-					data={cashflowSeries}
-					value={toMajor(summary.month.netCashflow)}
-					trend={calcTrend(cashflowSeries)}
-					formatOptions={moneyFormat}
+			}
+		>
+			{/* Top: net-worth hero (3/4) + budget card (1/4) */}
+			<div className="grid grid-cols-1 gap-4 xl:grid-cols-4">
+				<div className="xl:col-span-3">
+					<NetWorthHero
+						currency={summary.currency}
+						netWorth={toMajor(summary.netWorth)}
+						series={netWorthSeries}
+						range={range}
+						onRangeChange={setRange}
+					/>
+				</div>
+				<BudgetCard
+					currency={summary.currency}
+					spent={toMajor(summary.month.expense)}
+					income={toMajor(summary.month.income)}
+					budget={summary.budget != null ? toMajor(summary.budget) : null}
 				/>
 			</div>
 
-			{summary.otherCurrencies.length > 0 && (
-				<p className="text-sm text-muted-foreground">
-					Not counted above (different currency):{" "}
-					{summary.otherCurrencies
-						.map(
-							(c) =>
-								`${new Intl.NumberFormat(undefined, { style: "currency", currency: c.currency, maximumFractionDigits: 0 }).format(toMajor(c.amount))}`,
-						)
-						.join(" · ")}
-				</p>
-			)}
-
+			{/* Middle: cashflow candlestick (driven by the hero's range toggle) */}
 			<Card className="@container/card">
 				<CardHeader>
 					<CardTitle>Cashflow</CardTitle>
@@ -218,57 +223,70 @@ function DashboardPage() {
 						<span className="flex items-center gap-1.5">
 							<span
 								className="size-2 rounded-full"
-								style={{ backgroundColor: "var(--chart-1)" }}
+								style={{ backgroundColor: "var(--color-emerald-500)" }}
 							/>
-							Income
+							Net positive
 						</span>
 						<span className="flex items-center gap-1.5">
 							<span
 								className="size-2 rounded-full"
-								style={{ backgroundColor: "var(--chart-2)" }}
+								style={{ backgroundColor: "var(--color-red-500)" }}
 							/>
-							Expenses
+							Net negative
 						</span>
 					</CardDescription>
-					<ToggleGroup
-						type="single"
-						value={range}
-						onValueChange={(next) => {
-							if (next) navigate({ search: { range: next as Range } });
-						}}
-						variant="outline"
-						className="*:data-[slot=toggle-group-item]:px-4!"
-					>
-						<ToggleGroupItem value="7d">7 days</ToggleGroupItem>
-						<ToggleGroupItem value="30d">30 days</ToggleGroupItem>
-						<ToggleGroupItem value="90d">90 days</ToggleGroupItem>
-					</ToggleGroup>
 				</CardHeader>
 				<CardContent className="px-2 pt-4 sm:px-6 sm:pt-6">
-					<AreaChart aspectRatio="3 / 1" className="w-full" data={chartData}>
+					<CandlestickChart
+						aspectRatio="3 / 1"
+						className="w-full"
+						data={candlestickData}
+					>
 						<Grid />
 						<XAxis />
-						<ChartTooltip  className="bg-zinc-100" />
-						<Area
-							dataKey="income"
-							stroke="var(--chart-1)"
-							strokeWidth={2}
-							showHighlight
+						<ChartTooltip
+							backgroundColor={"oklch(96.7% 0.001 286.375)"}
+							rows={(point) => [
+								{
+									color: "var(--color-emerald-500)",
+									label: "Income",
+									value: moneyFmt.format(point.income as number),
+								},
+								{
+									color: "var(--color-red-500)",
+									label: "Expenses",
+									value: moneyFmt.format(point.expense as number),
+								},
+								{
+									color:
+										(point.close as number) > 0
+											? "var(--color-emerald-500)"
+											: (point.close as number) < 0
+												? "var(--color-red-500)"
+												: "oklch(55.1% 0.027 264.364)",
+									label: "Net",
+									value: moneyFmt.format(point.close as number),
+								},
+							]}
 						/>
-						<Area
-							dataKey="expense"
-							stroke="var(--chart-2)"
-							strokeWidth={2}
-							showHighlight
-						/>
-					</AreaChart>
+						<Candlestick />
+					</CandlestickChart>
 				</CardContent>
 			</Card>
 
-			<TransactionPreviewTable
-				transactions={transactions ?? []}
-				accounts={accounts ?? []}
-			/>
+			{/* Bottom: monthly spending calendar + recent transactions */}
+			<div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+				<MonthlySpendingCalendar
+					transactions={transactions ?? []}
+					currency={summary.currency}
+				/>
+				<TransactionPreviewTable
+					transactions={(transactions ?? []).filter(
+						(t) => t.currency === summary.currency,
+					)}
+					accounts={accounts ?? []}
+				/>
+			</div>
 		</PageShell>
 	);
 }

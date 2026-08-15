@@ -1,7 +1,6 @@
 import {
 	BadgeDollarSign,
 	CameraIcon,
-	ChartBarIcon,
 	CircleHelpIcon,
 	CommandIcon,
 	DatabaseIcon,
@@ -60,15 +59,11 @@ const data = {
 			icon: <TagIcon />,
 		},
 		{
-			title: "Projects",
-			url: "#",
-			icon: <FolderIcon />,
+			title: "Budgets",
+			url: "/budgets",
+			icon: <Wallet />,
 		},
-		{
-			title: "Team",
-			url: "#",
-			icon: <UsersIcon />,
-		},
+		
 	],
 	navClouds: [
 		{
@@ -166,7 +161,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						>
 							<a href="#">
 								<CommandIcon className="size-5!" />
-								<span className="text-base font-semibold">myFinance</span>
+								<span className="text-base font-semibold">Denarii</span>
 							</a>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
@@ -174,7 +169,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			</SidebarHeader>
 			<SidebarContent>
 				<NavMain items={data.navMain} />
-				<NavDocuments items={data.documents} />
+				{/* <NavDocuments items={data.documents} /> */}
 				<NavSecondary items={data.navSecondary} className="mt-auto" />
 			</SidebarContent>
 			<SidebarFooter>

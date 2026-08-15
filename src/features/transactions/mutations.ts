@@ -8,6 +8,7 @@ import type {
 } from "./api"
 import { transactionsApi } from "./api"
 import { transactionKeys } from "./queries"
+import { dashboardKeys } from "../dashboard/queries"
 import type { HttpError } from "../shared/http"
 
 export function useCreateTransaction() {
@@ -16,6 +17,7 @@ export function useCreateTransaction() {
     mutationFn: (json) => transactionsApi.create(json),
     onSuccess: () => {
       toast.success("Transaction added")
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       return queryClient.invalidateQueries({ queryKey: transactionKeys.all })
     },
     onError: (err) =>
@@ -29,6 +31,7 @@ export function useUpdateTransaction(id: string) {
     mutationFn: (json) => transactionsApi.update(id, json),
     onSuccess: () => {
       toast.success("Transaction updated")
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       return queryClient.invalidateQueries({ queryKey: transactionKeys.all })
     },
     onError: (err) =>
@@ -43,6 +46,7 @@ export function useDeleteTransaction() {
     onSuccess: (_void, id) => {
       toast.success("Transaction deleted")
       queryClient.removeQueries({ queryKey: transactionKeys.detail(id) })
+      queryClient.invalidateQueries({ queryKey: dashboardKeys.all })
       queryClient.invalidateQueries({ queryKey: transactionKeys.all })
     },
     onError: (err) =>

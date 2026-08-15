@@ -5,6 +5,8 @@ import accounts from "./routes/accounts";
 import transactions from "./routes/transactions"
 import categories from "./routes/categories"
 import dashboard from "./routes/dashboard"
+import settings from "./routes/settings"
+import budgets from "./routes/budgets"
 import { AppError } from "#/server/lib/error";
 import { ZodError } from "zod";
 
@@ -14,7 +16,9 @@ const app = new Hono()
 	.route("/accounts", accounts)
 	.route("/transactions", transactions)
 	.route("/categories", categories)
-	.route("/dashboard", dashboard);
+	.route("/dashboard", dashboard)
+	.route("/settings", settings)
+	.route("/budgets", budgets);
 
 
 

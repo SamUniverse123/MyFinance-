@@ -37,14 +37,14 @@
   --chart-4: oklch(0.394 0.023 107.4);
   --chart-5: oklch(0.286 0.016 107.4);
   --radius: 0.625rem;
-  --sidebar: oklch(0.988 0.003 106.5);
-  --sidebar-foreground: oklch(0.153 0.006 107.1);
-  --sidebar-primary: oklch(0.228 0.013 107.4);
-  --sidebar-primary-foreground: oklch(0.988 0.003 106.5);
-  --sidebar-accent: oklch(0.966 0.005 106.5);
-  --sidebar-accent-foreground: oklch(0.228 0.013 107.4);
-  --sidebar-border: oklch(0.93 0.007 106.5);
-  --sidebar-ring: oklch(0.737 0.021 106.9);
+  --sidebar: oklch(0.988 0.003 106.5);              /* background */
+--sidebar-foreground: oklch(0.153 0.006 107.1);   /* text */
+--sidebar-primary: oklch(0.228 0.013 107.4);      /* active/selected item bg */
+--sidebar-primary-foreground: oklch(0.988 0.003 106.5);
+--sidebar-accent: oklch(0.966 0.005 106.5);       /* hover bg */
+--sidebar-accent-foreground: oklch(0.228 0.013 107.4);
+--sidebar-border: oklch(0.93 0.007 106.5);
+--sidebar-ring: oklch(0.737 0.021 106.9);         /* focus ring */
   --chart-background: oklch(1 0 0);
   --chart-foreground: oklch(0.145 0.004 285);
   --chart-foreground-muted: oklch(0.55 0.014 260);
@@ -375,5 +375,239 @@ a {
   }
   html {
     @apply font-sans;
+  }
+}
+/* ------------------------------------------------------------------ */
+/* Metallic texture — reusable brushed-metal surface for cards/buttons */
+/* ------------------------------------------------------------------ */
+
+/* Registered so it interpolates as an <angle>: a plain custom property used
+ * inside conic-gradient(from …) can't animate, but a registered one can, which
+ * is what lets the spun pattern spin on hover. */
+@property --spin-angle {
+  syntax: "<angle>";
+  inherits: false;
+  initial-value: 0deg;
+}
+
+@keyframes spun-spin {
+  to {
+    --spin-angle: 360deg;
+  }
+}
+
+@layer components {
+  /*
+   * .metallic
+   *   Layered background = fine brushed grain (repeating-linear) +
+   *   a diagonal sheen sweep + a base vertical gradient. Pairs a top
+   *   inset highlight with a bottom inset shadow for a beveled edge.
+   *   Tokens let you retint per element without rewriting the layers.
+   */
+  .metallic {
+    --metallic-base: oklch(0.86 0.006 106.5);
+    --metallic-hi: oklch(0.98 0.004 106.5);
+    --metallic-lo: oklch(0.72 0.008 106.5);
+    --metallic-grain: color-mix(in oklab, var(--metallic-lo) 55%, transparent);
+    --metallic-sheen: color-mix(in oklab, var(--metallic-hi) 28%, transparent);
+
+    position: relative;
+    color: oklch(0.28 0.013 107.4);
+    /* First layer is a soft glare that follows the cursor via --sheen-x/y
+     * (parked off the top edge when idle, so it only reads on hover). */
+    background-image:
+      radial-gradient(
+        circle at var(--sheen-x, 50%) var(--sheen-y, -20%),
+        color-mix(in oklab, var(--metallic-hi) 60%, transparent),
+        transparent 42%
+      ),
+      repeating-linear-gradient(
+        115deg,
+        transparent 0 2px,
+        var(--metallic-grain) 2px 3px
+      ),
+      linear-gradient(115deg, transparent 38%, var(--metallic-sheen) 48%, transparent 58%),
+      linear-gradient(to bottom, var(--metallic-hi), var(--metallic-base) 42%, var(--metallic-lo));
+    background-blend-mode: screen, overlay, screen, normal;
+    /* Rim tinted to the finish; darker than the base for a machined edge. */
+    --metallic-edge: color-mix(in oklab, var(--metallic-lo) 60%, black);
+   box-shadow:
+  /*      inset 0 1px 0 0 color-mix(in oklab, var(--metallic-hi) 85%, transparent),/*  
+      inset 0 -1px 2px 0 color-mix(in oklab, var(--metallic-lo) 70%, transparent),
+      inset 0 0 0 1px var(--metallic-edge),
+    /*    0 1px 2px 0 oklch(0 0 0 / 0.18)*/;
+  }
+
+  /* Interactive: shift the sheen + lift the top highlight on hover/press. */
+  .metallic-interactive {
+    transition: box-shadow 150ms ease, filter 150ms ease;
+  }
+  .metallic-interactive:hover {
+    filter: brightness(1.02) saturate(1.02);
+  }
+  .metallic-interactive:active {
+    box-shadow:
+      inset 0 1px 3px 0 color-mix(in oklab, var(--metallic-lo) 80%, transparent),
+      inset 0 -1px 0 0 color-mix(in oklab, var(--metallic-hi) 60%, transparent),
+      0 0.5px 1px 0 oklch(0 0 0 / 0.2);
+  }
+
+  /* Gold / brass variant */
+  .metallic-gold {
+    --metallic-base: oklch(0.82 0.09 92);
+    --metallic-hi: oklch(0.95 0.05 98);
+    --metallic-lo: oklch(0.66 0.1 78);
+    color: oklch(0.3 0.06 80);
+  }
+
+  /* Dark mode: gunmetal / graphite */
+  .dark .metallic {
+    --metallic-base: oklch(0.34 0.012 107.4);
+    --metallic-hi: oklch(0.5 0.012 107.4);
+    --metallic-lo: oklch(0.24 0.012 107.4);
+    color: oklch(0.95 0.004 106.5);
+    box-shadow:
+      inset 0 1px 0 0 color-mix(in oklab, var(--metallic-hi) 70%, transparent),
+      inset 0 -1px 2px 0 oklch(0 0 0 / 0.5),
+      0 1px 2px 0 oklch(0 0 0 / 0.4);
+  }
+  .dark .metallic-gold {
+    --metallic-base: oklch(0.5 0.08 85);
+    --metallic-hi: oklch(0.68 0.07 92);
+    --metallic-lo: oklch(0.38 0.07 75);
+    color: oklch(0.95 0.03 95);
+  }
+
+  /* ---------------------------------------------------------------- */
+  /* Spun metal — conic "machined" finish (radial light bands).       */
+  /* Distinct from .metallic (linear brushed). Pair a color modifier  */
+  /* (.spun-gold / .spun-silver / .spun-bronze / .spun-titanium) with */
+  /* the base .spun-metal class. Metal colors are intentionally fixed */
+  /* across light/dark — a metal swatch looks the same either way.    */
+  /* ---------------------------------------------------------------- */
+  .spun-metal {
+    /* Defaults (silver) so the base class works alone; a color modifier sets
+     * the real machined pattern via --spun-conic. Ported from the reference:
+     *   --spun-conic  the ~29-stop conic (the machined banding)
+     *   --spun-flat   flat base tone showing as the padding-ring
+     *   --spun-edge   inset 1px rim color
+     *   --spun-spec   cursor-follow specular  --spun-text  label color */
+    --spun-flat: #d4d4d4;
+    --spun-edge: #c9c9c9;
+    --spun-spec: rgba(255, 255, 255, 0.35);
+    --spun-text: #1a1a1a;
+    --spun-conic: conic-gradient(
+      from calc(var(--sheen-angle, 0deg) + var(--spin-angle, 0deg)) at 50% 50%,
+      #d7d7d7, #c3c3c3, #cccccc, #c6c6c6, #d3d3d3, #d8d8d8, #d5d5d5, #d8d8d8,
+      #d3d3d3, #c5c5c5, #c0c0c0, #bfbfbf, #d0d0d0, #d9d9d9, #d1d1d1, #c5c5c5,
+      #c8c8c8, #d7d7d7, #d5d5d5, #cdcdcd, #c4c4c4, #d9d9d9, #cecece, #c5c5c5,
+      #c5c5c5, #cdcdcd, #d8d8d8, #d9d9d9, #d7d7d7
+    );
+    /* How long one full rotation of the pattern takes while hovered. */
+    --spun-spin-duration: 12s;
+
+    position: relative;
+    color: var(--spun-text);
+    background-image:
+      /* cursor-follow specular (kept from the interactive build) */
+      radial-gradient(
+        circle at var(--sheen-x, 50%) var(--sheen-y, 34%),
+        var(--spun-spec),
+        transparent 60%
+      ),
+      /* the machined conic pattern (spins on hover) */
+      var(--spun-conic),
+      /* flat base tone underneath */
+      linear-gradient(var(--spun-flat), var(--spun-flat));
+    background-repeat: no-repeat;
+    background-position: center, center, center;
+    background-size: 100% 100%, 100% 100%, 100% 100%;
+    /* $hl inset highlights + the reference's inset 1px tinted rim. */
+    box-shadow:
+      inset 0 0 0 1px var(--spun-edge),
+      inset 0 1px 2px rgba(255, 255, 255, 0.5),
+    /*  inset 0 -1px 2px rgba(0, 0, 0, 0.5),
+      0 4px 10px -2px rgba(0, 0, 0, 0.35)*/;
+    transition: background-position 120ms ease-out;
+  }
+
+  /* Spin the pattern (not the element) gently on hover. Only the conic's
+   * angle animates, so text and the rim stay put. Skipped for reduced-motion. */
+  @media (prefers-reduced-motion: no-preference) {
+    .spun-metal:hover {
+      animation: spun-spin var(--spun-spin-duration, 12s) linear infinite;
+    }
+  }
+
+  .spun-gold {
+    --spun-flat: #f6d600;
+    --spun-edge: #eedc00;
+    --spun-spec: rgba(255, 250, 210, 0.5);
+    --spun-text: #4a3d00;
+    --spun-conic: conic-gradient(
+      from calc(var(--sheen-angle, 0deg) + var(--spin-angle, 0deg)) at 50% 50%,
+      #edc800, #e3b600, #f3cf00, #ffe800, #ffe900, #ffeb00, #ffe000, #ebc500,
+      #e0b100, #f1cc00, #fcdc00, #ffe500, #fad900, #eec200, #e7b900, #f7d300,
+      #ffe800, #ffe300, #f5d100, #e6b900, #e3b600, #f4d000, #ffe400, #ebc600,
+      #e3b600, #f6d500, #ffe900, #ffe90a, #edc800
+    );
+  }
+
+  .spun-silver {
+    --spun-flat: #d4d4d4;
+    --spun-edge: #c9c9c9;
+    --spun-spec: rgba(255, 255, 255, 0.45);
+    --spun-text: #1a1a1a;
+    --spun-conic: conic-gradient(
+      from calc(var(--sheen-angle, 0deg) + var(--spin-angle, 0deg)) at 50% 50%,
+      #d7d7d7, #c3c3c3, #cccccc, #c6c6c6, #d3d3d3, #d8d8d8, #d5d5d5, #d8d8d8,
+      #d3d3d3, #c5c5c5, #c0c0c0, #bfbfbf, #d0d0d0, #d9d9d9, #d1d1d1, #c5c5c5,
+      #c8c8c8, #d7d7d7, #d5d5d5, #cdcdcd, #c4c4c4, #d9d9d9, #cecece, #c5c5c5,
+      #c5c5c5, #cdcdcd, #d8d8d8, #d9d9d9, #d7d7d7
+    );
+  }
+
+  .spun-bronze {
+    --spun-flat: #ad3b36;
+    --spun-edge: #bc7e6b;
+    --spun-spec: rgba(255, 210, 190, 0.4);
+    --spun-text: #2a0f0c;
+    --spun-conic: conic-gradient(
+      from calc(var(--sheen-angle, 0deg) + var(--spin-angle, 0deg)) at 50% 50%,
+      #d95641, #b14439, #b2453a, #d25645, #d56847, #d05441, #b85137, #b2453a,
+      #c34f40, #df4647, #a94338, #c94943, #c85442, #a4413c, #d9543a, #d1564e,
+      #ab4338, #bb4a3c, #dc5843, #b94839, #aa4237, #c24e42, #ce523f, #ab4338,
+      #dd5944, #ca4d33, #ab4338, #cb503e, #d95641
+    );
+  }
+
+  .spun-titanium {
+    --spun-flat: #e5c9be;
+    --spun-edge: #c7aca0;
+    --spun-spec: rgba(255, 250, 245, 0.4);
+    --spun-text: #3a2a22;
+    --spun-conic: conic-gradient(
+      from calc(var(--sheen-angle, 0deg) + var(--spin-angle, 0deg)) at 50% 50%,
+      #e6c9bf, #d2b5aa, #cbaea3, #d4b5ab, #e5c3bd, #d9c0b4, #d9bcb1, #c5a399,
+      #e3c6bc, #e7cac0, #dec0b5, #d3b6ab, #cfada1, #d4b6ac, #e2c6c0, #e2c6c0,
+      #d2b1a6, #d2b1a6, #d1b4a9, #e1c4ba, #e5c9be, #dec1b6, #d3b6ab, #ceb0a6,
+      #cfada3, #d2b5aa, #dabdb2, #e5c9be, #e6c9bf
+    );
+  }
+
+  /* Parallax tilt — leans the surface toward the cursor using the tilt vars
+   * emitted by usePointerSheen. Idle values are 0deg, so it sits flat until
+   * hovered and eases back on leave. Gated on reduced-motion. */
+  .metal-tilt {
+    transform-style: preserve-3d;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .metal-tilt {
+      transform: perspective(700px)
+        rotateX(var(--sheen-tilt-x, 0deg))
+        rotateY(var(--sheen-tilt-y, 0deg));
+      transition: transform 160ms ease-out;
+      will-change: transform;
+    }
   }
 }

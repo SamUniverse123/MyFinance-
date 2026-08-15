@@ -14,6 +14,7 @@ import {
 	categoriesListOptions,
 	useGetCategories,
 } from "#/features/categories/queries";
+import { PageBreadcrumb } from "@/components/page-breadcrumb";
 import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/_app/categories/")({
@@ -25,7 +26,9 @@ export const Route = createFileRoute("/_app/categories/")({
 function PageShell({ children }: { children: React.ReactNode }) {
 	return (
 		<>
-			<SiteHeader title="Categories" />
+			<SiteHeader
+				breadcrumb={<PageBreadcrumb items={[{ label: "Categories" }]} />}
+			/>
 			<div className="flex flex-1 flex-col">
 				<div className="@container/main flex flex-1 flex-col">
 					<div className="flex flex-1 flex-col gap-6 p-4 md:gap-8 md:p-6">
@@ -76,8 +79,12 @@ function CategoriesPage() {
 
 	return (
 		<PageShell>
-			<CategorySection kind="expense" categories={categories} />
-			<CategorySection kind="income" categories={categories} />
+			{/* Expense categories on the left, income on the right (single column on
+			    small screens). */}
+			<div className="grid grid-cols-1 items-start gap-6 md:gap-8 lg:grid-cols-2">
+				<CategorySection kind="expense" categories={categories} />
+				<CategorySection kind="income" categories={categories} />
+			</div>
 		</PageShell>
 	);
 }

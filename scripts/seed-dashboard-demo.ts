@@ -53,6 +53,22 @@ async function main() {
 		.values({ userId, name: "Rewards Credit Card", type: "credit_card", currency: "USD", initialBalance: minor(-350), color: "#4a3aa7", icon: "credit_card" })
 		.returning();
 
+	// Extra-currency accounts (ADR-0009: currency toggle, never converted) — enough
+	// currencies to exercise the toggle's 3-circle-button layout plus its overflow
+	// dropdown for a 4th+.
+	const [myrChecking] = await db
+		.insert(accounts)
+		.values({ userId, name: "Kuala Lumpur Checking", type: "checking", currency: "MYR", initialBalance: minor(8000), color: "#e34948", icon: "checking" })
+		.returning();
+	const [sgdSavings] = await db
+		.insert(accounts)
+		.values({ userId, name: "Singapore Savings", type: "savings", currency: "SGD", initialBalance: minor(15000), color: "#eda100", icon: "savings" })
+		.returning();
+	const [eurTravel] = await db
+		.insert(accounts)
+		.values({ userId, name: "Europe Travel Fund", type: "savings", currency: "EUR", initialBalance: minor(2000), color: "#008300", icon: "savings" })
+		.returning();
+
 	// --- Categories (beyond the auto-seeded "Balance Adjustment") ---
 	const expenseDefs = [
 		{ name: "Groceries", icon: "shopping-cart", color: "#eb6834" },
@@ -192,6 +208,74 @@ async function main() {
 				status: "cleared",
 			});
 		}
+
+		// MYR: monthly salary + a few groceries runs a week, so its own currency
+		// scope has independent income/expense figures to toggle to.
+		if (dayOfMonth === 1) {
+			rows.push({
+				userId,
+				accountId: myrChecking.id,
+				categoryId: byName.get("Salary")!.id,
+				amount: minor(9500),
+				currency: "MYR",
+				date: dateStr,
+				payeeName: "Petronas Payroll",
+				status: "cleared",
+			});
+		}
+		if (daysAgo % 4 === 0) {
+			rows.push({
+				userId,
+				accountId: myrChecking.id,
+				categoryId: byName.get("Groceries")!.id,
+				amount: minor(-faker.number.float({ min: 30, max: 150, fractionDigits: 2 })),
+				currency: "MYR",
+				date: dateStr,
+				payeeName: faker.helpers.arrayElement(["Jaya Grocer", "AEON", "Village Grocer"]),
+				status: "cleared",
+			});
+		}
+
+		// SGD: a lighter monthly cadence — rent plus occasional dining.
+		if (dayOfMonth === 3) {
+			rows.push({
+				userId,
+				accountId: sgdSavings.id,
+				categoryId: byName.get("Rent")!.id,
+				amount: minor(-1800),
+				currency: "SGD",
+				date: dateStr,
+				payeeName: "Marina Bay Residences",
+				status: "cleared",
+			});
+		}
+		if (faker.number.int({ min: 1, max: 10 }) === 1) {
+			rows.push({
+				userId,
+				accountId: sgdSavings.id,
+				categoryId: byName.get("Dining")!.id,
+				amount: minor(-faker.number.float({ min: 10, max: 60, fractionDigits: 2 })),
+				currency: "SGD",
+				date: dateStr,
+				payeeName: faker.helpers.arrayElement(["Din Tai Fung", "Newton Food Centre", "Ya Kun Kaya Toast"]),
+				status: "cleared",
+			});
+		}
+
+		// EUR: sparse — just enough to prove it toggles and to push the toggle into
+		// its overflow-dropdown state (4th currency).
+		if (faker.number.int({ min: 1, max: 20 }) === 1) {
+			rows.push({
+				userId,
+				accountId: eurTravel.id,
+				categoryId: byName.get("Entertainment")!.id,
+				amount: minor(-faker.number.float({ min: 15, max: 120, fractionDigits: 2 })),
+				currency: "EUR",
+				date: dateStr,
+				payeeName: faker.helpers.arrayElement(["Louvre Museum", "Café de Flore", "Trattoria Roma"]),
+				status: "cleared",
+			});
+		}
 	}
 
 	await db.insert(transactions).values(rows);
@@ -199,7 +283,7 @@ async function main() {
 	console.log("Seeded demo account:");
 	console.log("  email:   ", email);
 	console.log("  password:", DEMO_PASSWORD);
-	console.log("  accounts:", [checking, savings, creditCard].map((a) => a.name).join(", "));
+	console.log("  accounts:", [checking, savings, creditCard, myrChecking, sgdSavings, eurTravel].map((a) => a.name).join(", "));
 	console.log("  transactions:", rows.length);
 }
 

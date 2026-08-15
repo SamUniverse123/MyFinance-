@@ -3,23 +3,73 @@ import { and, eq, gte, inArray, isNull, lte, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "@/db";
-import { accounts, transactions, userSettings } from "@/db/schema";
+import { accounts, budgets, transactions, userSettings } from "@/db/schema";
 import type { AuthEnv } from "../middleware/auth";
 
 const querySchema = z.object({
 	range: z.enum(["7d", "30d", "90d"]).default("30d"),
+	// Loosely validated (uppercased below) — an unrecognized/omitted value just falls
+	// back to the default currency rather than erroring (same tolerance as `range`).
+	currency: z
+		.string()
+		.regex(/^[A-Za-z]{3}$/)
+		.optional(),
 });
 
 const RANGE_DAYS = { "7d": 7, "30d": 30, "90d": 90 } as const;
 
+// Transaction dates are naive local calendar dates (the form stamps "today" as a
+// local YYYY-MM-DD, and the column has no timezone). The dashboard's date boundaries
+// must therefore also be computed in local time, NOT UTC — otherwise, for users east
+// of UTC (e.g. UTC+8), a transaction dated "today" locally sits past a UTC-derived
+// upper bound during the local morning and silently drops out of the month/budget/
+// cashflow figures.
 function isoDate(d: Date): string {
-	return d.toISOString().slice(0, 10);
+	const y = d.getFullYear();
+	const m = String(d.getMonth() + 1).padStart(2, "0");
+	const day = String(d.getDate()).padStart(2, "0");
+	return `${y}-${m}-${day}`;
 }
 
 function addDays(d: Date, days: number): Date {
 	const copy = new Date(d);
-	copy.setUTCDate(copy.getUTCDate() + days);
+	copy.setDate(copy.getDate() + days);
 	return copy;
+}
+
+/** Open-account count per currency (ADR-0009: currencies are scoped, never blended). */
+function accountCurrencyCounts(
+	openAccounts: { currency: string }[],
+): Map<string, number> {
+	const counts = new Map<string, number>();
+	for (const a of openAccounts)
+		counts.set(a.currency, (counts.get(a.currency) ?? 0) + 1);
+	return counts;
+}
+
+/** Most common currency among open accounts; USD when there are none. */
+function inferBaseCurrency(counts: Map<string, number>): string {
+	let best: string | null = null;
+	let bestCount = 0;
+	for (const [currency, count] of counts) {
+		if (count > bestCount) {
+			best = currency;
+			bestCount = count;
+		}
+	}
+	return best ?? "USD";
+}
+
+/** Toggle order: base/default currency first, then by account count descending. */
+function orderCurrencies(
+	counts: Map<string, number>,
+	baseCurrency: string,
+): string[] {
+	return [...counts.keys()].sort((a, b) => {
+		if (a === baseCurrency) return -1;
+		if (b === baseCurrency) return 1;
+		return (counts.get(b) ?? 0) - (counts.get(a) ?? 0) || a.localeCompare(b);
+	});
 }
 
 // Postgres `sum()` over a bigint column returns `numeric`, which node-postgres hands
@@ -38,20 +88,38 @@ const app = new Hono<AuthEnv>().get(
 	zValidator("query", querySchema),
 	async (c) => {
 		const userId = c.get("user").id;
-		const { range } = c.req.valid("query");
+		const { range, currency: requestedCurrency } = c.req.valid("query");
 
 		const [settings] = await db
 			.select()
 			.from(userSettings)
 			.where(eq(userSettings.userId, userId));
-		const baseCurrency = settings?.baseCurrency ?? "USD";
 
-		// --- Net worth (ADR-0006: base-currency accounts only; others are separate subtotals) ---
 		const openAccounts = await db
 			.select()
 			.from(accounts)
 			.where(and(eq(accounts.userId, userId), isNull(accounts.closedAt)));
 
+		// Default currency: an explicit settings row wins; otherwise infer from the
+		// user's most common account currency (fixes net worth silently zeroing out for
+		// users whose accounts are all non-USD and who have no settings row yet).
+		const currencyCounts = accountCurrencyCounts(openAccounts);
+		const defaultCurrency =
+			settings?.baseCurrency ?? inferBaseCurrency(currencyCounts);
+		const availableCurrencies = orderCurrencies(
+			currencyCounts,
+			defaultCurrency,
+		);
+
+		// ADR-0009: currencies are a view toggle, never converted/blended. An unknown or
+		// omitted `?currency=` falls back to the default rather than erroring.
+		const requestedUpper = requestedCurrency?.toUpperCase();
+		const currency =
+			requestedUpper && availableCurrencies.includes(requestedUpper)
+				? requestedUpper
+				: defaultCurrency;
+
+		// --- Net worth: only accounts in the selected currency ---
 		const accountSums = await db
 			.select({
 				accountId: transactions.accountId,
@@ -65,24 +133,15 @@ const app = new Hono<AuthEnv>().get(
 		);
 
 		let netWorth = 0;
-		const otherCurrencyTotals = new Map<string, number>();
 		for (const a of openAccounts) {
-			if (a.excludeFromNetWorth) continue;
-			const balance = a.initialBalance + (sumByAccount.get(a.id) ?? 0);
-			if (a.currency === baseCurrency) {
-				netWorth += balance;
-			} else {
-				otherCurrencyTotals.set(
-					a.currency,
-					(otherCurrencyTotals.get(a.currency) ?? 0) + balance,
-				);
-			}
+			if (a.excludeFromNetWorth || a.currency !== currency) continue;
+			netWorth += a.initialBalance + (sumByAccount.get(a.id) ?? 0);
 		}
 
-		// --- This month's income / expenses / cashflow ---
+		// --- This month's income / expenses / cashflow, in the selected currency ---
 		const today = new Date();
 		const monthStart = isoDate(
-			new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1)),
+			new Date(today.getFullYear(), today.getMonth(), 1),
 		);
 		const todayStr = isoDate(today);
 
@@ -92,7 +151,7 @@ const app = new Hono<AuthEnv>().get(
 			.where(
 				and(
 					eq(transactions.userId, userId),
-					eq(transactions.currency, baseCurrency),
+					eq(transactions.currency, currency),
 					isNull(transactions.transferGroupId),
 					gte(transactions.date, monthStart),
 					lte(transactions.date, todayStr),
@@ -100,6 +159,12 @@ const app = new Hono<AuthEnv>().get(
 			);
 		const monthIncome = monthRow?.income ?? 0;
 		const monthExpense = monthRow?.expense ?? 0;
+
+		// --- Budget for the selected currency (ADR-0009: per-currency, never shared) ---
+		const [budgetRow] = await db
+			.select({ amount: budgets.amount })
+			.from(budgets)
+			.where(and(eq(budgets.userId, userId), eq(budgets.currency, currency)));
 
 		// --- Daily cashflow series for the chart, zero-filled so there are no gaps ---
 		const days = RANGE_DAYS[range];
@@ -116,7 +181,7 @@ const app = new Hono<AuthEnv>().get(
 			.where(
 				and(
 					eq(transactions.userId, userId),
-					eq(transactions.currency, baseCurrency),
+					eq(transactions.currency, currency),
 					isNull(transactions.transferGroupId),
 					gte(transactions.date, rangeStart),
 					lte(transactions.date, todayStr),
@@ -136,7 +201,7 @@ const app = new Hono<AuthEnv>().get(
 		// using the same accounts, INCLUDING transfers (they still move balances, unlike
 		// the income/expense figures above which exclude them). ---
 		const netWorthAccountIds = openAccounts
-			.filter((a) => !a.excludeFromNetWorth && a.currency === baseCurrency)
+			.filter((a) => !a.excludeFromNetWorth && a.currency === currency)
 			.map((a) => a.id);
 
 		const dailyDeltaRows = netWorthAccountIds.length
@@ -167,13 +232,11 @@ const app = new Hono<AuthEnv>().get(
 		}
 
 		return c.json({
-			currency: baseCurrency,
+			currency,
+			availableCurrencies,
 			netWorth,
 			netWorthSeries,
-			otherCurrencies: Array.from(
-				otherCurrencyTotals,
-				([currency, amount]) => ({ currency, amount }),
-			),
+			budget: budgetRow?.amount ?? null,
 			month: {
 				income: monthIncome,
 				expense: monthExpense,
