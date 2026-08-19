@@ -92,7 +92,7 @@ export function MonthlySpendingCalendar({
 	];
 
 	return (
-		<Card className="flex h-full flex-col gap-0 py-0">
+		<Card className="flex h-full flex-col gap-0 py-0 ">
 			<CardHeader className="px-5 py-4">
 				<CardTitle>Spent in {monthLabel.split(" ")[0]}</CardTitle>
 			</CardHeader>

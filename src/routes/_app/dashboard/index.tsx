@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
 import * as z from "zod";
+import { prefetch } from "@/features/shared/http";
 import { Button } from "#/components/ui/button";
 import {
 	Card,
@@ -59,13 +60,13 @@ export const Route = createFileRoute("/_app/dashboard/")({
 		currency: search.currency,
 	}),
 	loader: ({ context, deps }) =>
-		Promise.all([
+		prefetch(
 			context.queryClient.ensureQueryData(
 				dashboardSummaryOptions(deps.range, deps.currency),
 			),
 			context.queryClient.ensureQueryData(accountsListOptions()),
 			context.queryClient.ensureQueryData(transactionsListOptions()),
-		]),
+		),
 	component: DashboardPage,
 });
 

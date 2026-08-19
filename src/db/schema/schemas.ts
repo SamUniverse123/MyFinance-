@@ -57,29 +57,31 @@ export const userSettings = pgTable('user_settings', {
 })
 
 // ADR-0009: currencies are never converted/blended, so a budget is scoped to one
-// currency — a MYR budget and an SGD budget are independent numbers. Monthly only
-// (no period column) since that's the only period this app supports today.
+// currency — a MYR budget and an SGD budget are independent numbers.
+// ADR-0015: effective-dated. A row means "this amount, starting this month"; a month's
+// effective budget is the most recent row at or before it. `amount` is nullable so a
+// null row is a tombstone ("no budget from this month on"). Keyed by month too.
 export const budgets = pgTable('budgets', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   currency: char('currency', { length: 3 }).notNull(),
-  amount: bigint('amount', { mode: 'number' }).notNull(), // minor units, monthly spend limit
+  month: date('month', { mode: 'string' }).notNull(), // first of month; effective-from
+  amount: bigint('amount', { mode: 'number' }), // minor units; null = tombstone (no budget)
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-  primaryKey({ columns: [t.userId, t.currency] }),
+  primaryKey({ columns: [t.userId, t.currency, t.month] }),
 ])
 
-// ADR-0010: per-currency monthly limit on a single top-level expense category. Keyed
-// (categoryId, currency) — categoryId already implies the user; currency scopes it (a
-// category may be budgeted independently in MYR and SGD). Additive to `budgets`; the
-// two layers are independent.
+// ADR-0010: per-currency monthly limit on a single top-level expense category.
+// ADR-0015: effective-dated, same carry-forward + tombstone rules as `budgets`.
 export const categoryBudgets = pgTable('category_budgets', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   categoryId: uuid('category_id').notNull().references(() => categories.id, { onDelete: 'cascade' }),
   currency: char('currency', { length: 3 }).notNull(),
-  amount: bigint('amount', { mode: 'number' }).notNull(), // minor units, monthly spend limit
+  month: date('month', { mode: 'string' }).notNull(), // first of month; effective-from
+  amount: bigint('amount', { mode: 'number' }), // minor units; null = tombstone (no budget)
   updatedAt: timestamp('updated_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-  primaryKey({ columns: [t.categoryId, t.currency] }),
+  primaryKey({ columns: [t.categoryId, t.currency, t.month] }),
   index('category_budgets_user_idx').on(t.userId),
 ])
  
@@ -144,9 +146,14 @@ export const payees = pgTable('payees', {
   id: uuid('id').primaryKey().defaultRandom(),
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   name: text('name').notNull(),
+  // Bare hostname (e.g. "netflix.com"), optional — drives the logo.dev logo lookup
+  // (ADR-0014). Null falls back to a name-based logo, then to an initials avatar.
+  domain: text('domain'),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
-  unique('payees_user_name_uq').on(t.userId, t.name),
+  // Case-insensitive dedup, matching accounts/categories (lower(name)) rather than
+  // the old case-sensitive constraint — "Starbucks" and "starbucks" are one payee.
+  uniqueIndex('payees_user_name_uq').on(t.userId, sql`lower(${t.name})`),
 ])
  
 export const tags = pgTable('tags', {
@@ -163,7 +170,8 @@ export const scheduledTransactions = pgTable('scheduled_transactions', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   accountId: uuid('account_id').notNull().references(() => accounts.id),
   categoryId: uuid('category_id').references(() => categories.id),
-  payeeId: uuid('payee_id').references(() => payees.id),
+  // ADR-0012: SET NULL on payee delete (see transactions.payeeId).
+  payeeId: uuid('payee_id').references(() => payees.id, { onDelete: 'set null' }),
   payeeName: text('payee_name'),
   amount: bigint('amount', { mode: 'number' }).notNull(), // signed
   currency: char('currency', { length: 3 }).notNull(),
@@ -187,7 +195,9 @@ export const transactions = pgTable('transactions', {
   userId: text('user_id').notNull().references(() => user.id, { onDelete: 'cascade' }),
   accountId: uuid('account_id').notNull().references(() => accounts.id ,{ onDelete: 'restrict' }),
   categoryId: uuid('category_id').references(() => categories.id), // null: uncategorized / split / transfer
-  payeeId: uuid('payee_id').references(() => payees.id),
+  // ADR-0012: deleting a payee clears the link (raw payee_name still displays),
+  // rather than the reassignment flow categories use.
+  payeeId: uuid('payee_id').references(() => payees.id, { onDelete: 'set null' }),
   payeeName: text('payee_name'),
   amount: bigint('amount', { mode: 'number' }).notNull(), // signed minor units
   currency: char('currency', { length: 3 }).notNull(),
@@ -203,6 +213,9 @@ export const transactions = pgTable('transactions', {
 }, (t) => [
   index('transactions_account_date_idx').on(t.userId, t.accountId, t.date),
   index('transactions_category_idx').on(t.userId, t.categoryId),
+  // payee-scoped reads: the management page's per-payee transaction count, and
+  // future payee filtering (transactions.md §3.1).
+  index('transactions_user_payee_idx').on(t.userId, t.payeeId),
   index('transactions_transfer_group_idx').on(t.transferGroupId),
   // idempotent import: unique only where external_id is present
   uniqueIndex('transactions_external_uq')
@@ -240,7 +253,8 @@ export const rules = pgTable('rules', {
   matchOp: ruleOp('match_op').notNull(),
   matchValue: text('match_value').notNull(),
   setCategoryId: uuid('set_category_id').references(() => categories.id),
-  setPayeeId: uuid('set_payee_id').references(() => payees.id),
+  // ADR-0012: SET NULL on payee delete (see transactions.payeeId).
+  setPayeeId: uuid('set_payee_id').references(() => payees.id, { onDelete: 'set null' }),
   createdAt: timestamp('created_at', { withTimezone: true }).notNull().defaultNow(),
 }, (t) => [
   index('rules_user_priority_idx').on(t.userId, t.priority),

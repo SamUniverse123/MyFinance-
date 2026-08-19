@@ -199,7 +199,11 @@ export function CategorySection({
 				<h2 className="text-sm font-medium text-muted-foreground capitalize">
 					{kind} categories
 				</h2>
-				<AddCategory kind={kind} />
+				{/* Hidden on mobile — the create FAB owns top-level "add category" there
+				    (Q5/Q14). Per-row "Add subcategory" below stays on every screen. */}
+				<div className="hidden md:flex">
+					<AddCategory kind={kind} />
+				</div>
 			</div>
 
 			{tree.length === 0 ? (

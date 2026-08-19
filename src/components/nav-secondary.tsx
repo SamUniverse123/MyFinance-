@@ -3,12 +3,19 @@
 import * as React from "react"
 
 import {
+  useSidebar,
   SidebarGroup,
   SidebarGroupContent,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "#/components/ui/sidebar.tsx"
+import { Link } from "@tanstack/react-router"
+
+
+
+
+
 
 export function NavSecondary({
   items,
@@ -20,17 +27,24 @@ export function NavSecondary({
     icon: React.ReactNode
   }[]
 } & React.ComponentPropsWithoutRef<typeof SidebarGroup>) {
+
+  const{state, open ,setOpen, openMobile, setOpenMobile, isMobile} = useSidebar()
+
+  const closeMobileSidebar = () =>{
+    if(isMobile) setOpenMobile(false)
+  }
+
   return (
     <SidebarGroup {...props}>
       <SidebarGroupContent>
         <SidebarMenu>
           {items.map((item) => (
-            <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton asChild>
-                <a href={item.url}>
+            <SidebarMenuItem key={item.title} >
+              <SidebarMenuButton asChild  >
+                <Link to={item.url} onClick={closeMobileSidebar } >
                   {item.icon}
                   <span>{item.title}</span>
-                </a>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}

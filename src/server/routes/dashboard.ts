@@ -1,5 +1,5 @@
 import { zValidator } from "@hono/zod-validator";
-import { and, eq, gte, inArray, isNull, lte, sql } from "drizzle-orm";
+import { and, desc, eq, gte, inArray, isNull, lte, sql } from "drizzle-orm";
 import { Hono } from "hono";
 import { z } from "zod";
 import { db } from "@/db";
@@ -161,10 +161,20 @@ const app = new Hono<AuthEnv>().get(
 		const monthExpense = monthRow?.expense ?? 0;
 
 		// --- Budget for the selected currency (ADR-0009: per-currency, never shared) ---
+		// Effective-dated (ADR-0015): the current month's budget is the most recent row
+		// at or before this month (null amount = tombstone → no budget).
 		const [budgetRow] = await db
 			.select({ amount: budgets.amount })
 			.from(budgets)
-			.where(and(eq(budgets.userId, userId), eq(budgets.currency, currency)));
+			.where(
+				and(
+					eq(budgets.userId, userId),
+					eq(budgets.currency, currency),
+					lte(budgets.month, monthStart),
+				),
+			)
+			.orderBy(desc(budgets.month))
+			.limit(1);
 
 		// --- Daily cashflow series for the chart, zero-filled so there are no gaps ---
 		const days = RANGE_DAYS[range];

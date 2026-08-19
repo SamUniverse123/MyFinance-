@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button.tsx";
 import { useGetAccounts } from "@/features/accounts/queries";
 import { useCreateCategory } from "@/features/categories/mutations";
 import { useGetCategories } from "@/features/categories/queries";
+import { useCreatePayee } from "@/features/payees/mutations";
+import { useGetPayees } from "@/features/payees/queries";
 import { useCreateTransaction } from "@/features/transactions/mutations";
 import {
 	TransactionFormModal,
@@ -25,8 +27,10 @@ export function AddTransaction({
 }) {
 	const { data: accounts } = useGetAccounts();
 	const { data: categories } = useGetCategories();
+	const { data: payees } = useGetPayees();
 	const createTransaction = useCreateTransaction();
 	const createCategory = useCreateCategory();
+	const createPayee = useCreatePayee();
 	const list = accounts ?? [];
 
 	const trigger = children ?? (
@@ -43,7 +47,9 @@ export function AddTransaction({
 			submitLabel="Add transaction"
 			accounts={list}
 			categories={categories ?? []}
+			payees={payees ?? []}
 			onCreateCategory={(input) => createCategory.mutateAsync(input)}
+			onCreatePayee={(name) => createPayee.mutateAsync({ name })}
 			trigger={trigger}
 			defaultValues={{
 				accountId: accountId ?? list[0]?.id ?? "",
@@ -51,7 +57,7 @@ export function AddTransaction({
 				amount: "",
 				categoryId: null,
 				date: todayISO(),
-				payeeName: "",
+				payeeId: null,
 				note: "",
 				status: "cleared",
 			}}
@@ -66,7 +72,7 @@ export function AddTransaction({
 					categoryId: v.categoryId,
 					currency: account.currency,
 					date: v.date,
-					payeeName: v.payeeName.trim() || null,
+					payeeId: v.payeeId,
 					note: v.note.trim() || null,
 					status: v.status,
 				});

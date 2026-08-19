@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/_app'
 import { Route as AboutRouteImport } from './routes/about'
+import { Route as BrandLabRouteImport } from './routes/brand-lab'
 import { Route as authLoginRouteImport } from './routes/(auth)/login'
 import { Route as authResetPasswordRouteImport } from './routes/(auth)/reset-password'
 import { Route as authSignupRouteImport } from './routes/(auth)/signup'
@@ -23,6 +24,7 @@ import { Route as AppCategoriesIndexRouteImport } from './routes/_app/categories
 import { Route as AppDashboardIndexRouteImport } from './routes/_app/dashboard/index'
 import { Route as AppTransactionsIndexRouteImport } from './routes/_app/transactions/index'
 import { Route as AppTransactionsTransactionIdRouteImport } from './routes/_app/transactions/$transactionId'
+import { Route as AppTransactionsPayeesRouteImport } from './routes/_app/transactions/payees'
 import { Route as ApiAuthSplatRouteImport } from './routes/api/auth/$'
 
 const IndexRoute = IndexRouteImport.update({
@@ -37,6 +39,11 @@ const AppRoute = AppRouteImport.update({
 const AboutRoute = AboutRouteImport.update({
   id: '/about',
   path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BrandLabRoute = BrandLabRouteImport.update({
+  id: '/brand-lab',
+  path: '/brand-lab',
   getParentRoute: () => rootRouteImport,
 } as any)
 const authLoginRoute = authLoginRouteImport.update({
@@ -95,6 +102,11 @@ const AppTransactionsTransactionIdRoute =
     path: '/transactions/$transactionId',
     getParentRoute: () => AppRoute,
   } as any)
+const AppTransactionsPayeesRoute = AppTransactionsPayeesRouteImport.update({
+  id: '/transactions/payees',
+  path: '/transactions/payees',
+  getParentRoute: () => AppRoute,
+} as any)
 const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
   id: '/api/auth/$',
   path: '/api/auth/$',
@@ -104,12 +116,14 @@ const ApiAuthSplatRoute = ApiAuthSplatRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/brand-lab': typeof BrandLabRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/api/$': typeof ApiSplatRoute
   '/accounts/$accountId': typeof AppAccountsAccountIdRoute
   '/transactions/$transactionId': typeof AppTransactionsTransactionIdRoute
+  '/transactions/payees': typeof AppTransactionsPayeesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/accounts/': typeof AppAccountsIndexRoute
   '/budgets/': typeof AppBudgetsIndexRoute
@@ -120,12 +134,14 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/brand-lab': typeof BrandLabRoute
   '/login': typeof authLoginRoute
   '/reset-password': typeof authResetPasswordRoute
   '/signup': typeof authSignupRoute
   '/api/$': typeof ApiSplatRoute
   '/accounts/$accountId': typeof AppAccountsAccountIdRoute
   '/transactions/$transactionId': typeof AppTransactionsTransactionIdRoute
+  '/transactions/payees': typeof AppTransactionsPayeesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/accounts': typeof AppAccountsIndexRoute
   '/budgets': typeof AppBudgetsIndexRoute
@@ -138,12 +154,14 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_app': typeof AppRouteWithChildren
   '/about': typeof AboutRoute
+  '/brand-lab': typeof BrandLabRoute
   '/(auth)/login': typeof authLoginRoute
   '/(auth)/reset-password': typeof authResetPasswordRoute
   '/(auth)/signup': typeof authSignupRoute
   '/api/$': typeof ApiSplatRoute
   '/_app/accounts/$accountId': typeof AppAccountsAccountIdRoute
   '/_app/transactions/$transactionId': typeof AppTransactionsTransactionIdRoute
+  '/_app/transactions/payees': typeof AppTransactionsPayeesRoute
   '/api/auth/$': typeof ApiAuthSplatRoute
   '/_app/accounts/': typeof AppAccountsIndexRoute
   '/_app/budgets/': typeof AppBudgetsIndexRoute
@@ -156,12 +174,14 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/about'
+    | '/brand-lab'
     | '/login'
     | '/reset-password'
     | '/signup'
     | '/api/$'
     | '/accounts/$accountId'
     | '/transactions/$transactionId'
+    | '/transactions/payees'
     | '/api/auth/$'
     | '/accounts/'
     | '/budgets/'
@@ -172,12 +192,14 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/brand-lab'
     | '/login'
     | '/reset-password'
     | '/signup'
     | '/api/$'
     | '/accounts/$accountId'
     | '/transactions/$transactionId'
+    | '/transactions/payees'
     | '/api/auth/$'
     | '/accounts'
     | '/budgets'
@@ -189,12 +211,14 @@ export interface FileRouteTypes {
     | '/'
     | '/_app'
     | '/about'
+    | '/brand-lab'
     | '/(auth)/login'
     | '/(auth)/reset-password'
     | '/(auth)/signup'
     | '/api/$'
     | '/_app/accounts/$accountId'
     | '/_app/transactions/$transactionId'
+    | '/_app/transactions/payees'
     | '/api/auth/$'
     | '/_app/accounts/'
     | '/_app/budgets/'
@@ -207,6 +231,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AppRoute: typeof AppRouteWithChildren
   AboutRoute: typeof AboutRoute
+  BrandLabRoute: typeof BrandLabRoute
   authLoginRoute: typeof authLoginRoute
   authResetPasswordRoute: typeof authResetPasswordRoute
   authSignupRoute: typeof authSignupRoute
@@ -235,6 +260,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/about'
       preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/brand-lab': {
+      id: '/brand-lab'
+      path: '/brand-lab'
+      fullPath: '/brand-lab'
+      preLoaderRoute: typeof BrandLabRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/(auth)/login': {
@@ -314,6 +346,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppTransactionsTransactionIdRouteImport
       parentRoute: typeof AppRoute
     }
+    '/_app/transactions/payees': {
+      id: '/_app/transactions/payees'
+      path: '/transactions/payees'
+      fullPath: '/transactions/payees'
+      preLoaderRoute: typeof AppTransactionsPayeesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/api/auth/$': {
       id: '/api/auth/$'
       path: '/api/auth/$'
@@ -327,6 +366,7 @@ declare module '@tanstack/react-router' {
 interface AppRouteChildren {
   AppAccountsAccountIdRoute: typeof AppAccountsAccountIdRoute
   AppTransactionsTransactionIdRoute: typeof AppTransactionsTransactionIdRoute
+  AppTransactionsPayeesRoute: typeof AppTransactionsPayeesRoute
   AppAccountsIndexRoute: typeof AppAccountsIndexRoute
   AppBudgetsIndexRoute: typeof AppBudgetsIndexRoute
   AppCategoriesIndexRoute: typeof AppCategoriesIndexRoute
@@ -337,6 +377,7 @@ interface AppRouteChildren {
 const AppRouteChildren: AppRouteChildren = {
   AppAccountsAccountIdRoute: AppAccountsAccountIdRoute,
   AppTransactionsTransactionIdRoute: AppTransactionsTransactionIdRoute,
+  AppTransactionsPayeesRoute: AppTransactionsPayeesRoute,
   AppAccountsIndexRoute: AppAccountsIndexRoute,
   AppBudgetsIndexRoute: AppBudgetsIndexRoute,
   AppCategoriesIndexRoute: AppCategoriesIndexRoute,
@@ -350,6 +391,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AppRoute: AppRouteWithChildren,
   AboutRoute: AboutRoute,
+  BrandLabRoute: BrandLabRoute,
   authLoginRoute: authLoginRoute,
   authResetPasswordRoute: authResetPasswordRoute,
   authSignupRoute: authSignupRoute,

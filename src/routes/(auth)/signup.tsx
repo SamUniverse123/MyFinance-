@@ -1,6 +1,7 @@
-import { SignupForm } from "@/components/signup-form";
-import Silk from "@/components/Silk";
 import { createFileRoute } from "@tanstack/react-router";
+import { BrandMark } from "@/components/brand-mark";
+import Silk from "@/components/Silk";
+import { SignupForm } from "@/components/signup-form";
 
 export const Route = createFileRoute("/(auth)/signup")({
 	component: SignUpPage,
@@ -11,7 +12,7 @@ function SignUpPage() {
 		<div className="grid min-h-svh lg:grid-cols-2">
 			<div className="flex flex-col gap-4 p-6 md:p-10">
 				<div className="flex justify-center gap-2 md:justify-start">
-					<a href="#" className="flex items-center gap-2 font-medium"></a>
+					<BrandMark expanded autoPlay size={38} />
 				</div>
 				<div className="flex flex-1 items-center justify-center">
 					<div className="w-full max-w-xs">

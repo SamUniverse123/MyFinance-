@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
+import { prefetch } from "@/features/shared/http";
 import { Button } from "#/components/ui/button";
 import {
 	Empty,
@@ -19,7 +20,7 @@ import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/_app/categories/")({
 	loader: ({ context }) =>
-		context.queryClient.ensureQueryData(categoriesListOptions()),
+		prefetch(context.queryClient.ensureQueryData(categoriesListOptions())),
 	component: CategoriesPage,
 });
 

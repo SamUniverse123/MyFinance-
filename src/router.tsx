@@ -1,12 +1,8 @@
 import { createRouter as createTanStackRouter } from "@tanstack/react-router";
-import { routeTree } from "./routeTree.gen";
-
-import type { ReactNode } from "react";
-import { QueryClient } from "@tanstack/react-query";
 import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query";
-import TanstackQueryProvider, {
-	getContext,
-} from "./integrations/tanstack-query/root-provider";
+import { RouteError } from "./components/route-error";
+import { getContext } from "./integrations/tanstack-query/root-provider";
+import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
 	const context = getContext();
@@ -17,6 +13,10 @@ export function getRouter() {
 		scrollRestoration: true,
 		defaultPreload: "intent",
 		defaultPreloadStaleTime: 0,
+		// Last-resort fallback for beforeLoad/loader errors that escape a route
+		// (e.g. the root session fetch failing when the DB is unreachable). Renders
+		// a branded retry screen instead of the raw "Internal server error" default.
+		defaultErrorComponent: RouteError,
 	});
 
 	setupRouterSsrQueryIntegration({ router, queryClient: context.queryClient });

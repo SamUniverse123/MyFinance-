@@ -4,6 +4,7 @@ import { requireAuth } from "./middleware/auth";
 import accounts from "./routes/accounts";
 import transactions from "./routes/transactions"
 import categories from "./routes/categories"
+import payees from "./routes/payees"
 import dashboard from "./routes/dashboard"
 import settings from "./routes/settings"
 import budgets from "./routes/budgets"
@@ -16,6 +17,7 @@ const app = new Hono()
 	.route("/accounts", accounts)
 	.route("/transactions", transactions)
 	.route("/categories", categories)
+	.route("/payees", payees)
 	.route("/dashboard", dashboard)
 	.route("/settings", settings)
 	.route("/budgets", budgets);

@@ -1,6 +1,8 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight, Pencil, TriangleAlert } from "lucide-react";
+import { prefetch } from "@/features/shared/http";
 import { PageBreadcrumb } from "#/components/page-breadcrumb";
+import { PageControls } from "#/components/page-controls";
 import { Button } from "#/components/ui/button";
 import {
 	Empty,
@@ -13,30 +15,42 @@ import { Separator } from "#/components/ui/separator";
 import { Skeleton } from "#/components/ui/skeleton";
 import { getAccountTypeMeta } from "#/features/accounts/account-types";
 import type { Account } from "#/features/accounts/api";
-import { accountBalance, txnTotalsByAccount } from "#/features/accounts/balances";
+import {
+	accountBalance,
+	txnTotalsByAccount,
+} from "#/features/accounts/balances";
 import { DeleteAccount } from "#/features/accounts/components/delete-account";
 import { EditAccount } from "#/features/accounts/components/edit-account";
 import {
 	accountsDetailsOptions,
 	useGetAccount,
 } from "#/features/accounts/queries";
+import type { Payee } from "#/features/payees/api";
+import { PayeeAvatar } from "#/features/payees/components/payee-avatar";
+import { payeesListOptions, useGetPayees } from "#/features/payees/queries";
+import {
+	payeesById as buildPayeesById,
+	payeeIdentity,
+} from "#/features/payees/resolve";
 import type { Transaction } from "#/features/transactions/api";
 import {
 	transactionsListOptions,
 	useGetTransactions,
 } from "#/features/transactions/queries";
+import { usePagination } from "#/hooks/use-pagination";
 import { currencyFlag, formatMoney } from "#/lib/currency";
 import { cn } from "#/lib/utils";
 import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/_app/accounts/$accountId")({
 	loader: ({ context, params }) =>
-		Promise.all([
+		prefetch(
 			context.queryClient.ensureQueryData(
 				accountsDetailsOptions(params.accountId),
 			),
 			context.queryClient.ensureQueryData(transactionsListOptions()),
-		]),
+			context.queryClient.ensureQueryData(payeesListOptions()),
+		),
 	component: AccountDetailPage,
 });
 
@@ -146,6 +160,7 @@ function AccountDetail({ account }: { account: Account }) {
 	// opening balance plus every transaction posted to the account. The net-worth
 	// contribution is that same balance, unless the account is excluded.
 	const { data: transactions } = useGetTransactions();
+	const { data: payees } = useGetPayees();
 	const rows = (transactions ?? [])
 		.filter((t) => t.accountId === account.id)
 		.sort(
@@ -267,14 +282,20 @@ function AccountDetail({ account }: { account: Account }) {
 				</dl>
 			</section>
 
-			<AccountTransactions transactions={rows} />
+			<AccountTransactions transactions={rows} payees={payees ?? []} />
 		</div>
 	);
 }
 
-function TransactionRow({ transaction }: { transaction: Transaction }) {
+function TransactionRow({
+	transaction,
+	payee,
+}: {
+	transaction: Transaction;
+	payee: { name: string; domain: string | null } | null;
+}) {
 	const income = transaction.amount > 0;
-	const title = transaction.payeeName || transaction.note || "Transaction";
+	const title = payee?.name || transaction.note || "Transaction";
 
 	return (
 		<Link
@@ -282,6 +303,9 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
 			params={{ transactionId: transaction.id }}
 			className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/40 focus-visible:bg-muted/40 focus-visible:outline-none"
 		>
+			{payee && (
+				<PayeeAvatar name={payee.name} domain={payee.domain} size={32} />
+			)}
 			<div className="min-w-0 flex-1">
 				<div className="truncate text-sm font-medium">{title}</div>
 				<div className="truncate text-xs text-muted-foreground">
@@ -306,7 +330,21 @@ function TransactionRow({ transaction }: { transaction: Transaction }) {
 
 /** This account's transactions, newest first (already filtered/sorted by the
  *  parent, which also derives the balance from them). */
-function AccountTransactions({ transactions }: { transactions: Transaction[] }) {
+const TRANSACTIONS_PAGE_SIZE = 5;
+
+function AccountTransactions({
+	transactions,
+	payees,
+}: {
+	transactions: Transaction[];
+	payees: Payee[];
+}) {
+	const payeeMap = buildPayeesById(payees);
+	const { page, setPage, totalPages, pageItems } = usePagination(
+		transactions,
+		TRANSACTIONS_PAGE_SIZE,
+	);
+
 	return (
 		<section className="rounded-xl border bg-card p-5 md:p-6">
 			<h3 className="mb-4 text-sm font-medium">Transactions</h3>
@@ -320,11 +358,24 @@ function AccountTransactions({ transactions }: { transactions: Transaction[] }) 
 					</EmptyHeader>
 				</Empty>
 			) : (
-				<div className="-mx-5 divide-y border-t md:-mx-6">
-					{transactions.map((transaction) => (
-						<TransactionRow key={transaction.id} transaction={transaction} />
-					))}
-				</div>
+				<>
+					<div className="-mx-5 divide-y border-t md:-mx-6">
+						{pageItems.map((transaction) => (
+							<TransactionRow
+								key={transaction.id}
+								transaction={transaction}
+								payee={payeeIdentity(transaction, payeeMap)}
+							/>
+						))}
+					</div>
+					<div className="mt-4">
+						<PageControls
+							page={page}
+							totalPages={totalPages}
+							onPageChange={setPage}
+						/>
+					</div>
+				</>
 			)}
 		</section>
 	);

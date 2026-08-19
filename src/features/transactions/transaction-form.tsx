@@ -39,6 +39,8 @@ import { Textarea } from "@/components/ui/textarea.tsx";
 import type { Account } from "@/features/accounts/api";
 import type { Category, CreateCategoryInput } from "@/features/categories/api";
 import { CategoryCombobox } from "@/features/categories/components/category-combobox";
+import type { Payee } from "@/features/payees/api";
+import { PayeeCombobox } from "@/features/payees/components/payee-combobox";
 import { cn } from "@/lib/utils.ts";
 
 export type TxnDirection = "expense" | "income";
@@ -50,7 +52,7 @@ export type TransactionFormValues = {
 	amount: string;
 	categoryId: string | null;
 	date: string;
-	payeeName: string;
+	payeeId: string | null;
 	note: string;
 	status: TxnStatus;
 };
@@ -85,7 +87,7 @@ const formSchema = z.object({
 	amount: z.string().refine((v) => Number(v) > 0, "Enter an amount"),
 	categoryId: z.string().nullable(),
 	date: z.string().min(1, "Pick a date"),
-	payeeName: z.string(),
+	payeeId: z.string().nullable(),
 	note: z.string(),
 	status: z.enum(["pending", "cleared", "reconciled"]),
 });
@@ -94,7 +96,10 @@ function TransactionFormBody({
 	idPrefix,
 	accounts,
 	categories,
+	payees,
 	onCreateCategory,
+	onCreatePayee,
+	payeePlaceholder,
 	defaultValues,
 	submitLabel,
 	onSubmit,
@@ -103,7 +108,11 @@ function TransactionFormBody({
 	idPrefix: string;
 	accounts: Account[];
 	categories: Category[];
+	payees: Payee[];
 	onCreateCategory: (input: CreateCategoryInput) => Promise<Category>;
+	onCreatePayee: (name: string) => Promise<{ id: string; name: string }>;
+	/** Raw payee text of a legacy transaction (no payeeId yet) — shown as a hint. */
+	payeePlaceholder?: string;
 	defaultValues: TransactionFormValues;
 	submitLabel: string;
 	onSubmit: (values: TransactionFormValues) => Promise<void>;
@@ -306,20 +315,20 @@ function TransactionFormBody({
 					)}
 				/>
 
-				{/* Payee */}
+				{/* Payee — create-or-link combobox; selecting sets payeeId (Q7). */}
 				<form.Field
-					name="payeeName"
+					name="payeeId"
 					children={(field) => (
 						<Field>
 							<FieldLabel htmlFor={`${idPrefix}-payee`}>Payee</FieldLabel>
-							<Input
-								id={`${idPrefix}-payee`}
-								name={field.name}
+							<PayeeCombobox
+								payees={payees}
 								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="e.g. Whole Foods"
-								autoComplete="off"
+								onChange={field.handleChange}
+								onCreate={onCreatePayee}
+								allowNone
+								noneLabel="No payee"
+								placeholder={payeePlaceholder ?? "Select or create a payee"}
 							/>
 						</Field>
 					)}
@@ -399,7 +408,10 @@ export function TransactionFormModal({
 	submitLabel,
 	accounts,
 	categories,
+	payees,
 	onCreateCategory,
+	onCreatePayee,
+	payeePlaceholder,
 	defaultValues,
 	onSubmit,
 	trigger,
@@ -409,7 +421,10 @@ export function TransactionFormModal({
 	submitLabel: string;
 	accounts: Account[];
 	categories: Category[];
+	payees: Payee[];
 	onCreateCategory: (input: CreateCategoryInput) => Promise<Category>;
+	onCreatePayee: (name: string) => Promise<{ id: string; name: string }>;
+	payeePlaceholder?: string;
 	defaultValues: TransactionFormValues;
 	onSubmit: (values: TransactionFormValues) => Promise<void>;
 	trigger: React.ReactNode;
@@ -422,7 +437,10 @@ export function TransactionFormModal({
 			idPrefix={isMobile ? "m" : "d"}
 			accounts={accounts}
 			categories={categories}
+			payees={payees}
 			onCreateCategory={onCreateCategory}
+			onCreatePayee={onCreatePayee}
+			payeePlaceholder={payeePlaceholder}
 			defaultValues={defaultValues}
 			submitLabel={submitLabel}
 			onSubmit={onSubmit}

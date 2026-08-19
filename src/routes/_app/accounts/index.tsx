@@ -1,6 +1,7 @@
 import { CurrencyDollarIcon } from "@phosphor-icons/react";
 import { createFileRoute } from "@tanstack/react-router";
 import { TriangleAlert } from "lucide-react";
+import { prefetch } from "@/features/shared/http";
 import { Button } from "#/components/ui/button";
 import {
 	Empty,
@@ -24,10 +25,10 @@ export const Route = createFileRoute("/_app/accounts/")({
 	// Prefetched on the server so the list is in the cache before first paint.
 	// Transactions come along too — balances/net worth are derived from them.
 	loader: ({ context }) =>
-		Promise.all([
+		prefetch(
 			context.queryClient.ensureQueryData(accountsListOptions()),
 			context.queryClient.ensureQueryData(transactionsListOptions()),
-		]),
+		),
 	component: AccountsPage,
 });
 
@@ -115,7 +116,14 @@ function AccountsPage() {
 	}
 
 	return (
-		<PageShell actions={<AddAccount />}>
+		<PageShell
+			actions={
+				// Hidden on mobile — the create FAB owns "add account" there (Q5).
+				<div className="hidden md:flex">
+					<AddAccount />
+				</div>
+			}
+		>
 			<AccountsList accounts={accounts} />
 		</PageShell>
 	);

@@ -30,6 +30,13 @@ import { getAccountTypeMeta } from "@/features/accounts/account-types";
 import type { Account } from "@/features/accounts/api";
 import type { Category } from "@/features/categories/api";
 import { CategoryBadge } from "@/features/categories/components/category-badge";
+import type { Payee } from "@/features/payees/api";
+import { PayeeAvatar } from "@/features/payees/components/payee-avatar";
+import {
+	payeesById as buildPayeesById,
+	payeeDisplayName,
+	payeeIdentity,
+} from "@/features/payees/resolve";
 import type { Transaction } from "@/features/transactions/api";
 import { formatMoney } from "@/lib/currency";
 import { cn } from "@/lib/utils.ts";
@@ -143,11 +150,13 @@ export function TransactionsTable({
 	transactions,
 	accounts,
 	categories,
+	payees,
 	onShowLess,
 }: {
 	transactions: Transaction[];
 	accounts: Account[];
 	categories: Category[];
+	payees: Payee[];
 	onShowLess: () => void;
 }) {
 	const navigate = useNavigate();
@@ -164,6 +173,7 @@ export function TransactionsTable({
 		() => new Map(categories.map((c) => [c.id, c])),
 		[categories],
 	);
+	const payeeMap = React.useMemo(() => buildPayeesById(payees), [payees]);
 
 	const onSort = (key: SortKey) => {
 		if (key === sortKey) {
@@ -178,7 +188,9 @@ export function TransactionsTable({
 		const q = search.trim().toLowerCase();
 		const filtered = q
 			? transactions.filter((t) =>
-					`${t.payeeName ?? ""} ${t.note ?? ""}`.toLowerCase().includes(q),
+					`${payeeDisplayName(t, payeeMap) ?? ""} ${t.note ?? ""}`
+						.toLowerCase()
+						.includes(q),
 				)
 			: transactions;
 
@@ -205,7 +217,7 @@ export function TransactionsTable({
 			return sortDir === "asc" ? cmp : -cmp;
 		});
 		return sorted;
-	}, [transactions, search, sortKey, sortDir, categoriesById]);
+	}, [transactions, search, sortKey, sortDir, categoriesById, payeeMap]);
 
 	const visibleColumns = COLUMNS.filter((c) => visibility[c.key]);
 
@@ -319,7 +331,23 @@ export function TransactionsTable({
 									>
 										{visibility.merchant && (
 											<TableCell className="font-medium">
-												{t.payeeName || t.note || "Transaction"}
+												{(() => {
+													const p = payeeIdentity(t, payeeMap);
+													return (
+														<span className="flex items-center gap-2">
+															{p && (
+																<PayeeAvatar
+																	name={p.name}
+																	domain={p.domain}
+																	size={24}
+																/>
+															)}
+															<span className="truncate">
+																{p?.name || t.note || "Transaction"}
+															</span>
+														</span>
+													);
+												})()}
 											</TableCell>
 										)}
 										{visibility.category && (

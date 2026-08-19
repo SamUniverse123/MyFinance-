@@ -21,11 +21,21 @@ export const budgetsApi = {
 	list: (signal?: AbortSignal) =>
 		unwrap(budgets.$get(undefined, { init: { signal } })),
 
-	/** GET /api/budgets/summary — everything the budgets page needs, scoped to one currency. */
-	summary: (currency: string | undefined, signal?: AbortSignal) =>
+	/** GET /api/budgets/summary — everything the budgets page needs, scoped to one
+	 *  currency and month (ADR-0015). Both optional; the server clamps/defaults them. */
+	summary: (
+		currency: string | undefined,
+		month: string | undefined,
+		signal?: AbortSignal,
+	) =>
 		unwrap(
 			budgets.summary.$get(
-				{ query: currency ? { currency } : {} },
+				{
+					query: {
+						...(currency ? { currency } : {}),
+						...(month ? { month } : {}),
+					},
+				},
 				{ init: { signal } },
 			),
 		),

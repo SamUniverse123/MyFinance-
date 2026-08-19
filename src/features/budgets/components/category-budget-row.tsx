@@ -20,12 +20,15 @@ import { SetBudgetDialog } from "./set-budget-dialog";
 export function CategoryBudgetRow({
 	category,
 	currency,
+	month,
 	highlighted = false,
 	dimmed = false,
 	onHover,
 }: {
 	category: BudgetCategory;
 	currency: string;
+	/** Selected month "YYYY-MM"; edits apply from this month onward (ADR-0015). */
+	month: string;
 	highlighted?: boolean;
 	dimmed?: boolean;
 	onHover?: (hovered: boolean) => void;
@@ -75,7 +78,7 @@ export function CategoryBudgetRow({
 					onSubmit={(amount) =>
 						update.mutateAsync({
 							categoryId: category.id,
-							input: { currency, amount },
+							input: { currency, month, amount },
 						})
 					}
 					trigger={

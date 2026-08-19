@@ -6,6 +6,9 @@ export const env = createEnv({
 		SERVER_URL: z.string().url().optional(),
 		RESEND_API_KEY: z.string().min(1),
 		EMAIL_FROM: z.string().min(1).optional(),
+		// logo.dev Brand Search secret key (sk_…), server-only. Optional: absent →
+		// brand search returns no results and the feature degrades gracefully.
+		LOGO_DEV_SECRET_KEY: z.string().min(1).optional(),
 	},
 
 	/**
@@ -17,6 +20,9 @@ export const env = createEnv({
 	client: {
 		VITE_APP_TITLE: z.string().min(1).optional(),
 		VITE_DEV_DOMAIN: z.string().url(),
+		// logo.dev publishable key (pk_…), safe client-side. Optional: absent →
+		// payee logos fall back to initials avatars.
+		VITE_LOGO_DEV_PUBLISHABLE_KEY: z.string().min(1).optional(),
 	},
 
 	/**

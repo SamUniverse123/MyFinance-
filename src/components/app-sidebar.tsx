@@ -1,26 +1,24 @@
+import { Link } from "@tanstack/react-router";
 import {
 	BadgeDollarSign,
 	CameraIcon,
 	CircleHelpIcon,
-	CommandIcon,
 	DatabaseIcon,
 	FileChartColumnIcon,
 	FileIcon,
 	FileTextIcon,
-	FolderIcon,
 	LayoutDashboardIcon,
 	ListIcon,
 	SearchIcon,
 	Settings2Icon,
 	TagIcon,
-	UsersIcon,
 	Wallet,
 } from "lucide-react";
 import type * as React from "react";
-import { NavDocuments } from "#/components/nav-documents.tsx";
 import { NavMain } from "#/components/nav-main.tsx";
 import { NavSecondary } from "#/components/nav-secondary.tsx";
 import { NavUser } from "#/components/nav-user.tsx";
+import { SidebarBrandMark } from "#/components/sidebar-brand-mark.tsx";
 import {
 	Sidebar,
 	SidebarContent,
@@ -63,7 +61,6 @@ const data = {
 			url: "/budgets",
 			icon: <Wallet />,
 		},
-		
 	],
 	navClouds: [
 		{
@@ -151,19 +148,18 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	return (
-		<Sidebar collapsible="offcanvas" {...props}>
+		<Sidebar collapsible="icon" {...props}>
 			<SidebarHeader>
 				<SidebarMenu>
-					<SidebarMenuItem>
-						<SidebarMenuButton
-							asChild
-							className="data-[slot=sidebar-menu-button]:p-1.5!"
+					<SidebarMenuItem >
+						<div
+							
+							className="data-[slot=sidebar-menu-button]:p-3.5! h-12  "
 						>
-							<a href="#">
-								<CommandIcon className="size-5!" />
-								<span className="text-base font-semibold">Denarii</span>
-							</a>
-						</SidebarMenuButton>
+							<Link to={"/dashboard"}>
+								<SidebarBrandMark />
+							</Link>
+						</div>
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarHeader>

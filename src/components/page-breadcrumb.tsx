@@ -31,7 +31,7 @@ export function PageBreadcrumb({ items }: { items: Crumb[] }) {
 						<React.Fragment key={item.label}>
 							<BreadcrumbItem>
 								{isLast || !item.to ? (
-									<BreadcrumbPage className="max-w-[40vw] truncate sm:max-w-xs">
+									<BreadcrumbPage className="max-w-[40vw] truncate sm:max-w-xs text-lg font-semibold">
 										{item.label}
 									</BreadcrumbPage>
 								) : (

@@ -1,5 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronLeft, Pencil, TriangleAlert } from "lucide-react";
+import { prefetch } from "@/features/shared/http";
 import { PageBreadcrumb } from "#/components/page-breadcrumb";
 import { Button } from "#/components/ui/button";
 import {
@@ -17,6 +18,12 @@ import {
 	accountsListOptions,
 	useGetAccounts,
 } from "#/features/accounts/queries";
+import { PayeeAvatar } from "#/features/payees/components/payee-avatar";
+import { payeesListOptions, useGetPayees } from "#/features/payees/queries";
+import {
+	payeesById as buildPayeesById,
+	payeeIdentity,
+} from "#/features/payees/resolve";
 import type { Transaction } from "#/features/transactions/api";
 import { DeleteTransaction } from "#/features/transactions/components/delete-transaction";
 import { EditTransaction } from "#/features/transactions/components/edit-transaction";
@@ -30,12 +37,13 @@ import { SiteHeader } from "@/components/site-header";
 
 export const Route = createFileRoute("/_app/transactions/$transactionId")({
 	loader: ({ context, params }) =>
-		Promise.all([
+		prefetch(
 			context.queryClient.ensureQueryData(
 				transactionDetailOptions(params.transactionId),
 			),
 			context.queryClient.ensureQueryData(accountsListOptions()),
-		]),
+			context.queryClient.ensureQueryData(payeesListOptions()),
+		),
 	component: TransactionDetailPage,
 });
 
@@ -116,25 +124,36 @@ function DetailItem({
 function TransactionDetail({
 	transaction,
 	account,
+	payee,
 }: {
 	transaction: Transaction;
 	account: Account | undefined;
+	payee: { name: string; domain: string | null } | null;
 }) {
 	const meta = getAccountTypeMeta(account?.type ?? "other");
 	const Icon = meta.icon;
 	const income = transaction.amount > 0;
-	const title = transaction.payeeName || transaction.note || "Transaction";
+	const title = payee?.name || transaction.note || "Transaction";
 
 	return (
 		<div className="flex flex-col gap-6">
 			<section className="rounded-xl border bg-card p-5 md:p-6">
 				<div className="flex items-start gap-4">
-					<span
-						className="flex size-14 shrink-0 items-center justify-center rounded-xl"
-						style={{ color: meta.color, backgroundColor: `${meta.color}1f` }}
-					>
-						<Icon className="size-7" />
-					</span>
+					{payee ? (
+						<PayeeAvatar
+							name={payee.name}
+							domain={payee.domain}
+							size={56}
+							className="rounded-xl"
+						/>
+					) : (
+						<span
+							className="flex size-14 shrink-0 items-center justify-center rounded-xl"
+							style={{ color: meta.color, backgroundColor: `${meta.color}1f` }}
+						>
+							<Icon className="size-7" />
+						</span>
+					)}
 					<div className="min-w-0 flex-1">
 						<h2 className="truncate text-2xl font-semibold">{title}</h2>
 						<p className="truncate text-sm text-muted-foreground">
@@ -187,9 +206,7 @@ function TransactionDetail({
 						value={<span className="capitalize">{transaction.status}</span>}
 					/>
 					<DetailItem label="Currency" value={transaction.currency} />
-					{transaction.payeeName && (
-						<DetailItem label="Payee" value={transaction.payeeName} />
-					)}
+					{payee && <DetailItem label="Payee" value={payee.name} />}
 					<DetailItem
 						label="Created"
 						value={fmtTimestamp(transaction.createdAt)}
@@ -225,6 +242,7 @@ function TransactionDetailPage() {
 		refetch,
 	} = useGetTransaction(transactionId);
 	const { data: accounts } = useGetAccounts();
+	const { data: payees } = useGetPayees();
 
 	if (isPending) {
 		return (
@@ -279,12 +297,16 @@ function TransactionDetailPage() {
 	}
 
 	const account = (accounts ?? []).find((a) => a.id === transaction.accountId);
-	const transactionName =
-		transaction.payeeName || transaction.note || "Transaction";
+	const payee = payeeIdentity(transaction, buildPayeesById(payees ?? []));
+	const transactionName = payee?.name || transaction.note || "Transaction";
 
 	return (
 		<PageShell transactionName={transactionName}>
-			<TransactionDetail transaction={transaction} account={account} />
+			<TransactionDetail
+				transaction={transaction}
+				account={account}
+				payee={payee}
+			/>
 		</PageShell>
 	);
 }
