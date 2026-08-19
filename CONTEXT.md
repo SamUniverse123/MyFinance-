@@ -25,6 +25,10 @@ _Avoid_: Total balance (ambiguous about whether it includes liabilities or other
 Income minus expenses over a given period (e.g. the current month), within the selected currency. Positive means more came in than went out.
 _Avoid_: Net income (overloaded with accounting/tax meaning outside this app)
 
+**Spend**:
+Total money-out for the **selected currency** over a period: expense-category outflows plus uncategorized and split outflows, with internal transfers excluded and refunds netted against their category by sign. Defined identically to the "overall spent" figure on the budgets page so the two surfaces can never disagree ([[0010-per-category-budgets-and-budgets-page]]). Surfaced as **Spending** in the UI (and the name of its page); `spend` in code; the raw dashboard API field is `expense`.
+_Avoid_: Expense as the aggregate noun (reserve it for the [[category kind]] and the raw API field, not the money-out total)
+
 **Selected currency**:
 The one currency a page's figures are scoped to at a given moment, chosen via the currency toggle. On the dashboard and transactions pages, every amount shown belongs to this single currency — the app never converts between currencies or shows a blended total.
 _Avoid_: Display currency (implies conversion into it, which the app does not do)

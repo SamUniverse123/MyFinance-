@@ -42,7 +42,7 @@ export function NavMain({
 										<Button
 											
 											onClick={openPicker}
-											className="metallic-interactive h-12 w-5/6 min-w-8 bg-primary text-primary-foreground duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
+											className="metallic-interactive h-12 w-5/6 min-w-8 bg-primary text-zinc-100 duration-200 ease-linear hover:bg-primary/90 hover:text-primary-foreground active:bg-primary/90 active:text-primary-foreground"
 										>
 											<CirclePlusIcon />
 											<span>Quick Create</span>
@@ -50,10 +50,10 @@ export function NavMain({
 									) : (
 										<Button
 											type="button"
-											// variant="metallic-gold"
+											
 											onClick={openPicker}
 											aria-label="Create"
-											className="flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground text-background shadow-sm transition-transform hover:opacity-90 active:scale-95 [&_svg]:size-4"
+											className="flex size-9 shrink-0 items-center justify-center rounded-full bg-foreground text-zinc-50 shadow-sm transition-transform hover:opacity-90 active:scale-95 [&_svg]:size-4"
 										>
 											<CirclePlusIcon />
 										</Button>
